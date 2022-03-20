@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="offset">16dp</dimen>
+    <dimen name="avatar_size">48dp</dimen>
+    <dimen name="little_avatar_size">30dp</dimen>
+    <dimen name="little_offset">5dp</dimen>
+    <dimen name="icon_button_padding">12dp</dimen>
+    <dimen name="icon_button_min_size">48dp</dimen>
+    <dimen name="icon_max_size">24dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="textWidth">250dp </dimen>
+</resources>

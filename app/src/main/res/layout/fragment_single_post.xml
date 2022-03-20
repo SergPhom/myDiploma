@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context=".SinglePostFragment">
+   /*post*/     <ScrollView
+                    android:id="@+id/post_container"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone">
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/offset">
+        /*avatar*/              <ImageView
+                                    android:id="@+id/avatar"
+                                    android:layout_width="@dimen/avatar_size"
+                                    android:layout_height="@dimen/avatar_size"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    tools:ignore="ContentDescription"
+                                    tools:srcCompat="@sample/posts_avatars" />
+
+       /*author*/               <TextView
+                                    android:id="@+id/author"
+                                    android:layout_width="0dp"
+                                    android:layout_height="0dp"
+                                    android:layout_marginStart="@dimen/offset"
+                                    android:clickable="true"
+                                    android:ellipsize="marquee"
+                                    android:fadingEdge="horizontal"
+                                    android:singleLine="true"
+                                    app:layout_constraintBottom_toTopOf="@+id/published"
+                                    app:layout_constraintEnd_toStartOf="@id/menu"
+                                    app:layout_constraintStart_toEndOf="@id/avatar"
+                                    app:layout_constraintTop_toTopOf="@+id/avatar"
+                                    app:layout_constraintVertical_chainStyle="packed"
+                                    tools:text="@sample/posts.json/data/author" />
+
+        /*published*/           <TextView
+                                    android:id="@+id/published"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="@dimen/offset"
+                                    app:layout_constraintBottom_toBottomOf="@+id/avatar"
+                                    app:layout_constraintStart_toEndOf="@id/avatar"
+                                    app:layout_constraintTop_toBottomOf="@+id/author"
+                                    tools:text="@sample/posts.json/data/published" />
+
+       /*menu*/                 <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/menu"
+                                    style="@style/Widget.App.Button.OutlinedButton.Menu"
+                                    android:padding="0dp"
+                                    app:icon="@drawable/ic_more_vert_24"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <androidx.constraintlayout.widget.Barrier
+                                    android:id="@+id/top_barrier"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:barrierDirection="bottom"
+                                    app:constraint_referenced_ids="author, avatar, menu, published" />
+
+       /*content*/              <TextView
+                                    android:id="@+id/content"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="@dimen/offset"
+                                    android:autoLink="all"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="@id/top_barrier"
+                                    tools:text="@sample/posts.json/data/content" />
+
+                                <androidx.constraintlayout.widget.Barrier
+                                    android:id="@+id/low_barrier"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:barrierDirection="bottom"
+                                    app:constraint_referenced_ids="content" />
+
+      /*likes,shares..*/        <com.google.android.material.button.MaterialButtonToggleGroup
+                                    android:id="@+id/button_group"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@android:color/transparent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="@id/low_barrier">
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/likes"
+                                            style="@style/Widget.App.Button.OutlinedButton.LikeShare"
+                                            android:text="@sample/posts.json/data/likes"
+                                            app:icon="@drawable/ic_likes_24dp"
+                                            tools:checked="false" />
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/shares"
+                                            style="@style/Widget.App.Button.OutlinedButton.LikeShare"
+                                            android:checkable="false"
+                                            android:text="@sample/posts.json/data/shared"
+                                            app:icon="@drawable/ic_shared_24"
+                                            tools:srcCompat="@drawable/ic_shared_24" />
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:layout_width="0dp"
+                                            android:layout_height="0dp"
+                                            android:layout_weight="1"/>
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/viewes"
+                                            style="@style/Widget.App.Button.OutlinedButton.LikeShare"
+                                            android:text="@sample/posts.json/data/viewed"
+                                            app:iconTint="?attr/colorControlNormal"
+                                            app:icon="@drawable/ic_viewed_24" />
+
+                                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                                <androidx.constraintlayout.widget.Barrier
+                                    android:id="@+id/ground_barrier"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:barrierDirection="bottom"
+                                    app:constraint_referenced_ids="button_group"/>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                </ScrollView>
+   /*attach*/   <FrameLayout
+                    android:id="@+id/attachment_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/video"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:iconGravity="top"
+                            app:layout_constraintTop_toBottomOf="@id/ground_barrier"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:icon="@drawable/ic_video_placeholser_300"
+                            app:iconTint="?attr/colorControlNormal"
+                            android:visibility="gone"
+                            android:layout_gravity="center"
+                            />
+
+                        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                            android:id="@+id/video_play"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:contentDescription="@string/description_post_save"
+                            app:srcCompat="@drawable/ic_video_play_24"
+                            tools:ignore="VectorDrawableCompat"
+                            android:visibility="gone"
+                            />
+
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/image_attachment"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:srcCompat="@sample/posts_avatars"
+                            android:layout_gravity="center_vertical"
+                            android:visibility="visible"
+                            />
+                </FrameLayout>
+        </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

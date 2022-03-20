@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">12НМедиа</string>
+    <string name="NMedia">НМедиа!</string>
+    <string name="description_post_save">Сохранить</string>
+    <string name="menu_remove">Удалить</string>
+    <string name="post_text">Текст Поста</string>
+    <string name="menu_edit">Редактировать</string>
+    <string name="error_empty_content">Поле не может быть пустым</string>
+    <string name="chooser_share_post">Поделиться постом</string>
+    <string name="google_play_unavailable">Google Api недоступен</string>
+    <string name="notification_user_liked">Пользователь %1$s поставил лайк посту %2$s</string>
+    <string name="channel_remote_name">Уведомления сервера</string>
+    <string name="channel_remote_description">Уведомления с удаленного сервера</string>
+    <string name="notification_new_post">%1$s опубликовал(а) новый пост</string> /string>
+    <string name="retry_loading">Попробовать заново загрузить</string>
+    <string name="empty_posts">Посты не обнаружены.\nЕсли вы создадите новый пост, он появится здесь.</string>
+    <string name="error_loading">Что-то пошло не так. Попробуйте ещё попозже.</string>
+    <string name="unsaved">Этот пост еще не сохранен на сервере</string>
+    <string name="retry_saving">Этот пост еще не сохранен на сервере. Ещё раз попытаться сохранить.</string>
+    <string name="newer_posts">Новые посты </string>
+    <string name="remove">Удалить</string>
+    <string name="sign_in">Вход</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="sign_out">Выход</string>
+    <string name="password">Пароль</string>
+    <string name="enter_password">Войти</string>
+    <string name="login">Логин</string>
+    <string name="authentication">Пожалуйста пройдите аутентификацию для продолжения</string>
+    <string name="cancel">Отмена</string>
+    <string name="are_you_shure">Вы уверены, что хотите выйти?</string>
+    <string name="name">Введите Имя</string>
+    <string name="password_confirm">Подтвердите свой пароль</string>
+    <string name="ad_description">Реклама</string>
+</resources>

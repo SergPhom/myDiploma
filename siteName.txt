@@ -1,0 +1,373 @@
+https://my-netology-diploma.herokuapp.com
+
+
+GET http://localhost:9999/api/users
+
+GET http://localhost:9999/api/users/{{user_id}}
+
+
+POST http://localhost:9999/api/users/authentication
+Content-Type: application/x-www-form-urlencoded
+login=student&pass=secret
+
+
+POST http://localhost:9999/api/users/registration
+Content-Type: application/x-www-form-urlencoded
+login=noname&pass=secret&name=NoName
+
+
+POST http://localhost:9999/api/users/registration
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+--WebAppBoundary
+Content-Disposition: form-data; name="login"
+Content-Type: text/plain
+newbie
+--WebAppBoundary
+Content-Disposition: form-data; name="pass"
+Content-Type: text/plain
+password
+--WebAppBoundary
+Content-Disposition: form-data; name="name"
+Content-Type: text/plain
+Newbie
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="image.png"
+< ./avatar.jpg
+--WebAppBoundary--
+
+
+GET http://localhost:9999/api/posts/latest?count=10
+
+
+GET http://localhost:9999/api/posts
+
+POST http://localhost:9999/api/posts
+Authorization: {{token}}
+Content-Type: application/json
+{
+  "id": 0,
+  "authorId": 0,
+  "author": "",
+  "authorAvatar": "",
+  "content": "Red Square",
+  "published": "2021-08-17T16:46:58.887547Z",
+  "coords": {
+    "lat": 55.751999,
+    "long": 37.617734
+  },
+  "attachment": {
+    "url": "netology.jpg",
+    "type": "IMAGE"
+  }
+}
+
+GET http://localhost:9999/api/posts/{{post_id}}
+
+
+updatePost
+POST http://localhost:9999/api/posts
+Authorization: {{token}}
+Content-Type: application/json
+{
+  "id": {{post_id}},
+  "authorId": 0,
+  "author": "",
+  "authorAvatar": "",
+  "content": "Red Square (updated)",
+  "coords": {
+    "lat": 55.751999,
+    "long": 37.617734
+  },
+  "attachment": {
+    "url": "netology.jpg",
+    "type": "IMAGE"
+  }
+}
+
+
+POST http://localhost:9999/api/posts/{{post_id}}/likes
+Authorization: {{token}}
+
+
+GET http://localhost:9999/api/posts/{{post_id}}
+Authorization: {{token}}
+
+DELETE http://localhost:9999/api/posts/{{post_id}}/likes
+Authorization: {{token}}
+
+GET http://localhost:9999/api/posts/{{post_id}}
+Authorization: {{token}}
+
+
+DELETE http://localhost:9999/api/posts/{{post_id}}
+Authorization: {{token}}
+
+### Создание нового сообщения (id = 0)
+POST http://localhost:9999/api/posts
+Authorization: {{token}}
+Content-Type: application/json
+{
+  "id": 0,
+  "authorId": 0,
+  "author": "",
+  "authorAvatar": "",
+  "content": "Red Square",
+  "published": "2021-08-17T16:46:58.887547Z",
+  "coords": {
+    "lat": 55.751999,
+    "long": 37.617734
+  },
+  "attachment": {
+    "url": "netology.jpg",
+    "type": "IMAGE"
+  }
+}
+
+
+GET http://localhost:9999/avatars/sber.jpg
+
+
+GET http://localhost:9999/media/sbercard.jpg
+
+
+### Загрузка изображения
+POST http://localhost:9999/api/media
+Authorization: {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="image.png"
+< ./image.png
+--WebAppBoundary--
+
+### Получение изображения по Id
+
+GET http://localhost:9999/media/{{media_id}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+### Загрузка mp3
+
+POST http://localhost:9999/api/media
+Authorization: {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="soundhelix.mp3"
+
+< ./soundhelix.mp3
+--WebAppBoundary--
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.assert(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/.test(response.body.id), "Invalid name");
+  client.global.set('media_id', response.body.id)
+});
+%}
+
+### Загрузка mp4
+
+POST http://localhost:9999/api/media
+Authorization: {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="max.mp4"
+
+< ./max.mp4
+--WebAppBoundary--
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.assert(/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/.test(response.body.id), "Invalid mime type");
+  client.global.set('media_id', response.body.id)
+});
+%}
+
+###
+### Раздел 4. Работа со стеной пользователя
+###
+
+### Получение сообщений со стены текущего пользователя (вместо id - my)
+
+GET http://localhost:9999/api/my/wall/latest?count=10
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+});
+%}
+
+### Получение сообщений со стены определённого пользователя (1 - Нетология)
+
+GET http://localhost:9999/api/1/wall/latest?count=10
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.global.set("wall_post_id", response.body[0].id)
+});
+%}
+
+### Получение списка сообщений
+
+GET http://localhost:9999/api/1/wall
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+});
+%}
+
+### Like сообщения
+
+POST http://localhost:9999/api/1/wall/{{wall_post_id}}/likes
+Authorization: {{token}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+### Получение сообщения по id
+
+GET http://localhost:9999/api/1/wall/{{wall_post_id}}
+Authorization: {{token}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.assert(response.body.likedByMe === true, "likedByMe didn't changed");
+});
+%}
+
+
+### Дизлайк сообщения
+
+DELETE http://localhost:9999/api/1/wall/{{wall_post_id}}/likes
+Authorization: {{token}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+### Получение сообщения по id
+
+GET http://localhost:9999/api/1/wall/{{wall_post_id}}
+Authorization: {{token}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.assert(response.body.likedByMe === false, "likedByMe didn't changed");
+});
+%}
+
+###
+### Раздел 5. События
+###
+
+### Получение списка событий
+
+GET http://localhost:9999/api/events/latest?count=10
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+});
+%}
+
+### Получение списка событий
+
+GET http://localhost:9999/api/events
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+});
+%}
+
+### Создание нового события (id = 0)
+
+POST http://localhost:9999/api/events
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "id": 0,
+  "authorId": 0,
+  "author": "",
+  "authorAvatar": "",
+  "content": "Выпускники Kotlin Developer",
+  "published": "2021-08-17T16:46:58.887547Z",
+  "datetime": "2021-09-17T16:46:58.887547Z",
+  "type": "ONLINE",
+  "link": "https://netology.ru/programs/android-app",
+  "speakerIds": [1, 6],
+  "attachment": {
+    "url": "netology.jpg",
+    "type": "IMAGE"
+  }
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+  client.global.set("event_id", response.body.id)
+});
+%}
+
+### Получение события по id
+
+GET http://localhost:9999/api/events/{{event_id}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.contentType.mimeType === "application/json", "Expected 'application/json' but received '" + response.contentType.mimeType + "'");
+});
+%}
+
+### Обновление сообытия (id != 0)
+
+POST http://localhost:9999/api/events
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "id": {{event_id}},
+  "authorId": 0,
+  "author": "",
+  "authorAvatar": "",
+  "content": "Выпускники Kotlin Developer (updated)",
+  "published": "2021-08-17T16:46:58.887547Z",
+  "datetime": "2021-09-17T16:46:58.887547Z",
+  "type": "ONLINE",
+  "link": "https://netology.ru/programs/android-app",
+  "speakerIds": [1, 6],
+  "attachment": {
+    "url": "netology.jpg",
+    "type": "IMAGE"
+  }
+}
+
+
+
