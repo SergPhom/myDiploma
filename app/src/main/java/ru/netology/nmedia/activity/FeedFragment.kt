@@ -4,9 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -22,12 +21,16 @@ import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
+import java.lang.Math.abs
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class FeedFragment: Fragment() {
+class FeedFragment: Fragment(){
+//    @Inject
+//    lateinit var viewModel: PostViewModel
 
     private val viewModel: PostViewModel by viewModels(
-        ownerProducer = ::requireParentFragment)
+    ownerProducer = ::requireParentFragment)
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
@@ -35,6 +38,7 @@ class FeedFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ):View {
+
         val binding = FragmentFeedBinding.inflate(
             inflater,
             container,
@@ -139,7 +143,6 @@ class FeedFragment: Fragment() {
         }
 
         binding.fab.setOnClickListener {
-            viewModel.loadUsers()
             if(viewModel.authenticated.value == true){
                 viewModel.forAuthenticated()
                 findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)

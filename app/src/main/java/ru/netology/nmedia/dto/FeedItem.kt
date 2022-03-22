@@ -1,13 +1,16 @@
 package ru.netology.nmedia.dto
 
+import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.annotation.RequiresApi
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
 import ru.netology.nework.enumeration.EventType
 import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.enumeration.Authorities
 import java.time.Instant
+import java.util.stream.Collectors
 
 sealed interface FeedItem {
     abstract val id: Long
@@ -37,14 +40,58 @@ data class Post(
     val likedByMe: Boolean = false,
     val attachment: Attachment? = null,
     val ownedByMe: Boolean = false,
-
     val coords: Coordinates? = null,
     val link: String? = null,
     val mentionIds: List<Long> = emptyList(),
     val mentionedMe: Boolean = false,
 
 ): Parcelable, FeedItem {
+    @RequiresApi(Build.VERSION_CODES.O)
+    constructor(parcel: Parcel) : this(
+        id = parcel.readLong(),
+        authorId = parcel.readLong(),
+        author = parcel.readString()!!,
+        authorAvatar = parcel.readString()!!,
+        content = parcel.readString()!!,
+        published = parcel.readString()!!,
+        likeOwnerIds = parcel.readString()!!.split(",").map { it.toLong() },
+        likedByMe = parcel.readByte() != 0.toByte(),
+        attachment = parcel.readParcelable<Attachment>(Attachment.javaClass.classLoader),
+        ownedByMe = parcel.readByte() != 0.toByte(),
+        coords = parcel.readParcelable<Coordinates>(Coordinates.javaClass.classLoader),
+        link = parcel.readString(),
+        mentionIds = parcel.readString()!!.split(",").map { it.toLong() },
+        mentionedMe = parcel.readByte() != 0.toByte()
+    )
 
+    companion object : Parceler<Post> {
+
+        override fun Post.write(parcel: Parcel, flags: Int) {
+            parcel.writeLong(id)
+            parcel.writeLong(authorId)
+            parcel.writeString(author)
+            parcel.writeString(authorAvatar)
+            parcel.writeString(content)
+            parcel.writeString(published)
+            parcel.writeString(likeOwnerIds.stream()
+                .map { it.toString() }
+                .collect(Collectors.joining(",")))
+            parcel.writeByte(if (likedByMe) 1 else 0)
+            parcel.writeParcelable(attachment,1)
+            parcel.writeByte(if (ownedByMe) 1 else 0)
+            parcel.writeParcelable(coords,1)
+            parcel.writeString(link)
+            parcel.writeString(mentionIds.stream()
+                .map { it.toString() }
+                .collect(Collectors.joining(",")))
+            parcel.writeByte(if (mentionedMe) 1 else 0)
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        override fun create(parcel: Parcel): Post {
+            return Post(parcel)
+        }
+    }
     fun count(value: Long): String = when(value){
         in 1000..9999 -> "${value/1000}" +
                 "${if ((value%1000L)/100L == 0L) "" else { "." + (value%1000)/100} + "K"}"
@@ -87,6 +134,7 @@ data class User(
     }
 }
 
+@Parcelize
 data class Event(
     val id: Long,
     val authorId: Long,
@@ -96,15 +144,15 @@ data class Event(
     val datetime: Instant? = null,
     val published: Instant? = null,
     val coords: Coordinates? = null,
-    val type: EventType,
-    val likeOwnerIds: Set<Long> = emptySet(),
+    val eventType: EventType,
+    val likeOwnerIds: List<Long> = emptyList(),
     val likedByMe: Boolean = false,
-    val speakerIds: Set<Long> = emptySet(),
-    val participantsIds: Set<Long> = emptySet(),
+    val speakerIds:  List<Long> = emptyList(),
+    val participantsIds:  List<Long> = emptyList(),
     val participatedByMe: Boolean = false,
     val attachment: Attachment? = null,
     val link: String? = null,
-)
+) : Parcelable
 
 @Parcelize
 data class Attachment(

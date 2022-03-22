@@ -50,9 +50,7 @@ interface PostDao {
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(posts: List<PostEntity>){
-        println("post dao work insert get posts $posts")
-    }
+    suspend fun insert(posts: List<PostEntity>)
 
     @Query("UPDATE PostEntity SET content = :content WHERE id = :id")
     suspend fun updateContentById(id: Long, content: String?)

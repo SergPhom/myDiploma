@@ -1,5 +1,8 @@
 package ru.netology.nmedia.viewmodel
 
+import android.app.Application
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
@@ -7,19 +10,23 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.netology.nmedia.R
 import ru.netology.nmedia.api.UsersApiService
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
+import ru.netology.nmedia.model.FeedModelState
+import ru.netology.nmedia.repository.UserRepository
 import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val appAuth: AppAuth,
-    private val usersApiService: UsersApiService
+    private val usersApiService: UsersApiService,
+    private val userRepository: UserRepository,
 ): ViewModel() {
     val data: LiveData<AuthState> = appAuth
         .authStateFlow
@@ -29,6 +36,14 @@ class AuthViewModel @Inject constructor(
 
     fun setAuth(id: Long, token: String){
         appAuth.setAuth(id,token)
+    }
+
+    fun loadUsers() = viewModelScope.launch {
+        try {
+            userRepository.getUsers()
+        } catch (e: java.lang.Exception) {
+
+        }
     }
 
     fun getToken(login: String, pass: String): Boolean{

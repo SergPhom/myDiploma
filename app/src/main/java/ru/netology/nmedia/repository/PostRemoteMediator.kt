@@ -96,10 +96,7 @@ class PostRemoteMediator @Inject constructor(
                         )
                     }
                 }
-                println("remMedi load work done and posts inserting start")
                 dao.insert(posts.map(PostEntity::fromDto))
-                println("remMedi load work done and posts inserted")
-                println("remMedi check db is empty - ${dao.isEmpty()}")
             }
             return MediatorResult.Success(posts.isEmpty())
         }catch (e: Exception){

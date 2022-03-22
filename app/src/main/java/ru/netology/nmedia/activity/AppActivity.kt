@@ -3,20 +3,25 @@ package ru.netology.nmedia.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
+import ru.netology.nmedia.databinding.ActivityAppBinding
 import ru.netology.nmedia.viewmodel.AuthViewModel
 import ru.netology.nmedia.viewmodel.SharedViewModel
 import javax.inject.Inject
@@ -25,9 +30,7 @@ import javax.inject.Inject
 class AppActivity: AppCompatActivity(R.layout.activity_app) {
 
     private val viewModel: AuthViewModel by viewModels()
-
     private val model: SharedViewModel by viewModels()
-
     @Inject
     lateinit var appAuth: AppAuth
 
@@ -40,9 +43,14 @@ class AppActivity: AppCompatActivity(R.layout.activity_app) {
     @Inject
     lateinit var firebaseMessaging: FirebaseMessaging
 
+    lateinit var binding: ActivityAppBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
+        binding = ActivityAppBinding.inflate(layoutInflater)
+        viewModel.loadUsers()
 
         intent?.let {
             if (it.action != Intent.ACTION_SEND) {
@@ -83,17 +91,40 @@ class AppActivity: AppCompatActivity(R.layout.activity_app) {
                 return@addOnCompleteListener
             }
 
-            val token = task.result
+//            val token = task.result
 //            println("FirebaseMess $token")
         }
 
         checkGoogleApiAvailability()
 
+        val view = binding.bottomBar
+
+        val listener = NavigationBarView.OnItemSelectedListener {
+             when(it.itemId){
+                R.id.posts -> {
+                    println("Navigate to Posts")
+                    findNavController(R.id.nav_host_fragment).navigate(
+                        R.id.action_eventFragment_to_feedFragment
+                    )
+                    true
+                }
+                R.id.events -> {
+                    println("Navigate to Events")
+                    findNavController(R.id.nav_host_fragment).navigate(
+                        R.id.action_feedFragment_to_eventFragment
+                    )
+                    true
+                }
+                else -> super.onOptionsItemSelected(it)
+            }
+        }
+        view.setOnItemSelectedListener(
+            listener
+        )
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
-
         menu?.let {
             it.setGroupVisible(R.id.unauthenticated, !viewModel.authenticated)
             it.setGroupVisible(R.id.authenticated, viewModel.authenticated)
@@ -102,29 +133,32 @@ class AppActivity: AppCompatActivity(R.layout.activity_app) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val navController = findNavController(R.id.nav_main)
         return when (item.itemId) {
             R.id.signin -> {
-                findNavController(R.id.nav_host_fragment).navigate(
+                navController.navigate(
                     R.id.action_feedFragment_to_authFragment,
                 )
                 true
             }
             R.id.signup -> {
-               findNavController(R.id.nav_host_fragment).navigate(
-                   R.id.action_feedFragment_to_signUpFragment
-               )
+                navController.navigate(
+                    R.id.action_feedFragment_to_signUpFragment
+                )
                 true
             }
             R.id.signout -> {
-                if(findNavController(R.id.nav_host_fragment)?.currentDestination?.id == R.id.newPostFragment){
+                if (navController?.currentDestination?.id == R.id.newPostFragment) {
                     model.select()
-                }else {
-                    appAuth.removeAuth()}
+                } else {
+                    appAuth.removeAuth()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 
     private fun checkGoogleApiAvailability() {
         with(googleApiAvailability) {
@@ -133,16 +167,19 @@ class AppActivity: AppCompatActivity(R.layout.activity_app) {
                 return@with
             }
             if (isUserResolvableError(code)) {
-                getErrorDialog(this@AppActivity, code, 9000).show()
+                getErrorDialog(this@AppActivity, code, 9000)?.show()
                 return
             }
             Toast.makeText(this@AppActivity, R.string.google_play_unavailable, Toast.LENGTH_LONG)
                 .show()
         }
     }
+
     override fun onPause() {
         super.onPause()
         getSharedPreferences("settings", Context.MODE_PRIVATE).edit()
             .putBoolean("FIRST", false).apply()
     }
+
 }
+

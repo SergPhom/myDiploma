@@ -1,25 +1,25 @@
 package ru.netology.nmedia.entity
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.room.*
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Coordinates
 import ru.netology.nmedia.dto.Post
 import java.sql.Types.INTEGER
-import java.util.*
 import java.util.stream.Collectors
-import javax.persistence.ElementCollection
 
 class ListConverter {
     @TypeConverter
-    fun fromLikeList(list: List<Long>): String {
+    fun fromList(list: List<Long>): String {
         return list.stream()
             .map { it.toString() }
             .collect(Collectors.joining(","))
     }
 
     @TypeConverter
-    fun toLikeList(data: String): List<Long> {
-        return data.split(",").map { it.toLong() }
+    fun toList(data: String): List<Long> {
+        return if (data.isNullOrBlank()) emptyList() else data.split(",").map { it.toLong() }
     }
 }
 
@@ -37,12 +37,14 @@ data class PostEntity(
     var likeOwnerIds: List<Long> = emptyList(),
     val link: String? = "",
     val mentionIds: List<Long> = emptyList(),
+    @ColumnInfo(typeAffinity = INTEGER)
     val mentionedMe: Boolean = false,
     @Embedded
     val attachment: Attachment? = null,
     @Embedded
     val coords: Coordinates? = null,
 ) {
+    @RequiresApi(Build.VERSION_CODES.O)
     fun toDto() = Post(id = id,
         authorId = authorId,
         author = author,
@@ -67,7 +69,7 @@ data class PostEntity(
                     author = dto.author,
                     authorAvatar = dto.authorAvatar ?: "",
                     content = dto.content,
-                    published = dto.published,
+                    published = dto.published.toString(),
                     likedByMe = dto.likedByMe,
                     attachment = dto.attachment,
                     coords = dto.coords,
@@ -82,6 +84,7 @@ data class PostEntity(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)
 fun List<Post>.toEntity(): List<PostEntity> = map(PostEntity::fromDto)
 

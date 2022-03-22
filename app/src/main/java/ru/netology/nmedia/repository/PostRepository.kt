@@ -11,7 +11,6 @@ interface PostRepository {
 
     val data: Flow<PagingData<Post>>
 
-    suspend fun  getUsers()
 //                 **************              READ
     suspend fun getAll()
 

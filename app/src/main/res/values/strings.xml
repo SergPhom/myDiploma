@@ -31,4 +31,7 @@
     <string name="name">Name</string>
     <string name="password_confirm">Confirm your password</string>
     <string name="ad_description">ad</string>
+    <string name="failed_users_load">Users load failed</string>
+    <string name="posts">Posts</string>
+    <string name="events">Events</string>
 </resources>

@@ -16,6 +16,7 @@ import ru.netology.nmedia.repository.PostRepository
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
 import java.lang.Exception
+import java.time.Instant
 import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
@@ -46,7 +47,7 @@ private val noPhoto = PhotoModel()
 class PostViewModel @Inject constructor(
     private val repository: PostRepository,
     private val appAuth: AppAuth,
-) : ViewModel(){
+): ViewModel(){
 
     private val cashed = repository.data
         .cachedIn(viewModelScope)
@@ -58,15 +59,15 @@ class PostViewModel @Inject constructor(
             cashed.map { posts ->
                 posts.map {
                     it.copy(ownedByMe = it.authorId == myId)
-                        .also {
-                            println(
-                                " ${it.id} ${
-                                    (Date().time.milliseconds - Date(it.published).time.seconds) > Date(
-                                        1
-                                    ).time.days
-                                }"
-                            )
-                        }
+//                        .also {
+//                            println(
+//                                " ${it.id} ${
+//                                    (Date().time.milliseconds - Date(it.published).time.seconds) > Date(
+//                                        1
+//                                    ).time.days
+//                                }"
+//                            )
+//                        }
                 }
 //                    .insertSeparators { _,next ->
 //                    if(next != null){
@@ -129,13 +130,6 @@ class PostViewModel @Inject constructor(
     val photo: LiveData<PhotoModel>
         get() = _photo
 
-    fun loadUsers() = viewModelScope.launch {
-        try {
-            repository.getUsers()
-        } catch (e: Exception) {
-            _dataState.value = FeedModelState( msg = "Loading error")
-        }
-    }
 
     fun forAuthenticated() {
         edited.postValue(empty.copy(authorId = appAuth.authStateFlow.value.id))

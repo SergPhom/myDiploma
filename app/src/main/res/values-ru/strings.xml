@@ -31,4 +31,6 @@
     <string name="name">Введите Имя</string>
     <string name="password_confirm">Подтвердите свой пароль</string>
     <string name="ad_description">Реклама</string>
+    <string name="posts">Посты</string>
+    <string name="events">События</string>
 </resources>

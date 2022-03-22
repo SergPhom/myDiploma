@@ -1,5 +1,7 @@
 package ru.netology.nmedia.repository
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -19,15 +21,17 @@ import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.error.*
 import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
     private val keyDao: PostRemoteKeyDao,
     private val postsApiService: PostsApiService,
-    private val usersApiService: UsersApiService,
     pager: Pager<Int, PostEntity>
 ): PostRepository {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalPagingApi::class)
     override val data = pager
         .flow
@@ -37,23 +41,6 @@ class PostRepositoryImpl @Inject constructor(
         .also { println("Post repo data work") }
 
 
-    override suspend fun getUsers(){
-        try {
-            println(" Post repository get users work")
-            val response = usersApiService.getAll()
-            if (!response.isSuccessful) {
-                throw ApiError(response.code(), response.message())
-            }
-            println(" Post repository work ${response.code()}")
-            val body = response.body() ?: throw ApiError(response.code(), response.message())
-            println(" Post repository work ${body.size}")
-        } catch (e: IOException) {
-            throw NetworkError
-        } catch (e: Throwable) {
-            println("Repository Error is ${e}")
-            throw UnknownError
-        }
-    }
 
     override suspend fun getAll() {
         try {

@@ -2,11 +2,13 @@ package ru.netology.nmedia.adapter
 
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.BounceInterpolator
 import android.widget.PopupMenu
+import androidx.annotation.RequiresApi
 import androidx.core.animation.doOnEnd
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -23,6 +25,11 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.view.load
 import ru.netology.nmedia.view.loadCircleCrop
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 interface Callback {
     fun onLiked(post: Post){}
@@ -45,7 +52,7 @@ class PostsAdapter(
         if( anim != null){
             println("not empty")
             (anim as ObjectAnimator).end()
-        } else println (" tag not found")
+        } else println ("animation tag not found")
     }
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
@@ -58,7 +65,7 @@ class PostsAdapter(
             anim.doOnEnd {
                 holder.itemView.setTag(R.id.likes + holder.absoluteAdapterPosition, null)
             }
-        } else println (" tag not found")
+        } else println ("animation tag not found")
     }
 
     override fun getItemViewType(position: Int): Int =
@@ -68,6 +75,7 @@ class PostsAdapter(
             is DateHeader -> R.layout.card_day
             null -> error("unknown view type")
         }
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)){
             is Ad -> (holder as AdViewHolder)?.bind(item)
@@ -76,6 +84,7 @@ class PostsAdapter(
             null -> error("unknown item type")
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int,
@@ -211,16 +220,21 @@ class PostViewHolder(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+        .withZone( ZoneId.systemDefault() )
+
+    @RequiresApi(Build.VERSION_CODES.O)
     fun bind(post: Post) {
         binding.apply {
             avatar.loadCircleCrop("${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}")
             author.text = "${post.author}  ${post.id}"
-            published.text = post.published.toString()
+            published.text = formatter.format(Instant.parse(post.published))
             content.text = post.content
 //            shares.text = post.count(post.shares)
 //            viewes.text = "${post.viewes}"
 //
-//            likes.text = "${post.likes}"
+            likes.text = "${post.likeOwnerIds.size}"
             likes.setIconResource(
                 if (post.likedByMe) R.drawable.ic_liked_24 else R.drawable.ic_likes_24
             )

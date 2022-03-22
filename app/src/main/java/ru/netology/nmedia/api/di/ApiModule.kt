@@ -13,6 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.TOKEN_KEY
+import ru.netology.nmedia.api.EventApiService
 import ru.netology.nmedia.api.PostsApiService
 import ru.netology.nmedia.api.UsersApiService
 import javax.inject.Singleton
@@ -71,6 +72,12 @@ object ApiModule {
     fun provideUserApiService(
         retrofit: Retrofit
     ): UsersApiService = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideEventApiService(
+        retrofit: Retrofit
+    ): EventApiService = retrofit.create()
 
     @Provides
     @Singleton
