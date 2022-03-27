@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.common.ConnectionResult
@@ -99,18 +100,22 @@ class AppActivity: AppCompatActivity(R.layout.activity_app) {
 
         val view = binding.bottomBar
 
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
         val listener = NavigationBarView.OnItemSelectedListener {
              when(it.itemId){
-                R.id.posts -> {
+                R.id.feedFragment -> {
                     println("Navigate to Posts")
-                    findNavController(R.id.nav_host_fragment).navigate(
+                    navController.navigate(
                         R.id.action_eventFragment_to_feedFragment
                     )
                     true
                 }
-                R.id.events -> {
+                R.id.eventFragment -> {
                     println("Navigate to Events")
-                    findNavController(R.id.nav_host_fragment).navigate(
+                    navController.navigate(
                         R.id.action_feedFragment_to_eventFragment
                     )
                     true
@@ -121,6 +126,7 @@ class AppActivity: AppCompatActivity(R.layout.activity_app) {
         view.setOnItemSelectedListener(
             listener
         )
+        setContentView(binding.root)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
