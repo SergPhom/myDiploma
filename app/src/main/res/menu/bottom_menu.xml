@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/feedFragment"
+        android:id="@+id/feed_Fragment"
         android:icon="@drawable/ic_participants_24"
         android:title="@string/posts"
         app:showAsAction="never" />
     <item
-        android:id="@+id/eventFragment"
+        android:id="@+id/event_Fragment"
         android:icon="@drawable/ic_add_24dp"
         android:title="@string/events"
         app:showAsAction="never" />

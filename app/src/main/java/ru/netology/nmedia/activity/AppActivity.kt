@@ -1,21 +1,20 @@
 package ru.netology.nmedia.activity
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
@@ -46,11 +45,14 @@ class AppActivity: AppCompatActivity(R.layout.activity_app) {
 
     lateinit var binding: ActivityAppBinding
 
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
 
         binding = ActivityAppBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         viewModel.loadUsers()
 
         intent?.let {
@@ -100,24 +102,29 @@ class AppActivity: AppCompatActivity(R.layout.activity_app) {
 
         val view = binding.bottomBar
 
+        val appBarConfigurations = AppBarConfiguration( setOf(R.id.feedFragment, R.id.eventFragment))
+
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
+        setupActionBarWithNavController(navController, appBarConfigurations)
+
         val listener = NavigationBarView.OnItemSelectedListener {
              when(it.itemId){
-                R.id.feedFragment -> {
+                R.id.feed_Fragment -> {
                     println("Navigate to Posts")
                     navController.navigate(
                         R.id.action_eventFragment_to_feedFragment
                     )
                     true
                 }
-                R.id.eventFragment -> {
+                R.id.event_Fragment -> {
                     println("Navigate to Events")
                     navController.navigate(
                         R.id.action_feedFragment_to_eventFragment
                     )
+                    recreate()
                     true
                 }
                 else -> super.onOptionsItemSelected(it)
@@ -126,7 +133,7 @@ class AppActivity: AppCompatActivity(R.layout.activity_app) {
         view.setOnItemSelectedListener(
             listener
         )
-        setContentView(binding.root)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
