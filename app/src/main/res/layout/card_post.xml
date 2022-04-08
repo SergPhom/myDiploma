@@ -96,14 +96,7 @@
             tools:checked="true"
             tools:text="@sample/posts.json/data/likes" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/shares"
-            style="@style/Widget.App.Button.OutlinedButton.LikeShare"
-            android:checkable="false"
-            android:text="@sample/posts.json/data/shared"
-            app:icon="@drawable/ic_shared_24"
-            tools:srcCompat="@drawable/ic_shared_24" />
-        
+        <!--
         <com.google.android.material.button.MaterialButton
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -114,7 +107,7 @@
             style="@style/Widget.App.Button.OutlinedButton.LikeShare"
             android:text="@sample/posts.json/data/viewed"
             app:iconTint="?attr/colorControlNormal"
-            app:icon="@drawable/ic_viewed_24" />
+            app:icon="@drawable/ic_viewed_24" /> -->
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -171,7 +164,7 @@
     <ImageView
         android:id="@+id/image_attachment"
         android:layout_width="wrap_content"
-        android:layout_height="250dp"
+        android:layout_height="wrap_content"
         android:scaleType="fitStart"
         android:layout_gravity="top"
         app:layout_constraintStart_toStartOf="parent"

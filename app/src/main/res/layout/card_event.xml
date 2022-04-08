@@ -260,7 +260,7 @@
             android:id="@+id/participants"
             style="@style/Widget.App.Button.OutlinedButton.LikeShare"
             android:checkable="false"
-            android:text="@sample/posts.json/data/shared"
+            android:text="20"
             app:icon="@drawable/ic_participants_24"
             tools:srcCompat="@drawable/ic_participants_24" />
         <com.google.android.material.imageview.ShapeableImageView
@@ -298,13 +298,14 @@
             app:shapeAppearanceOverlay="@style/LittleRoundImageView"
             tools:ignore="ContentDescription"
             tools:srcCompat="@sample/posts_avatars" />
-
+<!--
         <com.google.android.material.button.MaterialButton
             android:id="@+id/viewes"
             style="@style/Widget.App.Button.OutlinedButton.LikeShare"
             android:text="@sample/posts.json/data/viewed"
             app:icon="@drawable/ic_viewed_24"
             app:iconTint="?attr/colorControlNormal" />
+            -->
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
@@ -362,7 +363,7 @@
     <ImageView
         android:id="@+id/image_attachment"
         android:layout_width="wrap_content"
-        android:layout_height="250dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:scaleType="fitStart"
         android:visibility="gone"

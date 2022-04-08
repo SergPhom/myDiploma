@@ -34,4 +34,7 @@
     <string name="failed_users_load">Users load failed</string>
     <string name="posts">Posts</string>
     <string name="events">Events</string>
+    <string name="company_name">Company Name:</string>
+    <string name="position_in_company">Position in company:</string>
+    <string name="start_date">Start date:</string>
 </resources>

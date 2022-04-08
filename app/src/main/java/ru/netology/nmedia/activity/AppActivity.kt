@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -27,7 +28,7 @@ import ru.netology.nmedia.viewmodel.SharedViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AppActivity: AppCompatActivity(R.layout.activity_app) {
+class AppActivity: AppCompatActivity() {
 
     private val viewModel: AuthViewModel by viewModels()
     private val model: SharedViewModel by viewModels()
@@ -108,28 +109,36 @@ class AppActivity: AppCompatActivity(R.layout.activity_app) {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
+        navController.addOnDestinationChangedListener { _, nd: NavDestination, _->
+            if(nd.id == (R.id.authFragment)
+                || nd.id == R.id.signUpFragment
+                || nd.id == R.id.userProfileFragment
+                || nd.id == R.id.singlePostFragment
+            ){
+                view.visibility = View.GONE
+            }else{
+                view.visibility = View.VISIBLE
+            } }
         setupActionBarWithNavController(navController, appBarConfigurations)
 
         val listener = NavigationBarView.OnItemSelectedListener {
              when(it.itemId){
                 R.id.feed_Fragment -> {
-                    println("Navigate to Posts")
                     navController.navigate(
                         R.id.action_eventFragment_to_feedFragment
                     )
                     true
                 }
                 R.id.event_Fragment -> {
-                    println("Navigate to Events")
                     navController.navigate(
                         R.id.action_feedFragment_to_eventFragment
                     )
-                    recreate()
                     true
                 }
                 else -> super.onOptionsItemSelected(it)
             }
         }
+        
         view.setOnItemSelectedListener(
             listener
         )
@@ -146,7 +155,12 @@ class AppActivity: AppCompatActivity(R.layout.activity_app) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val navController = findNavController(R.id.nav_main)
+
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+
+        val navController = navHostFragment.navController
+
         return when (item.itemId) {
             R.id.signin -> {
                 navController.navigate(

@@ -20,14 +20,9 @@ import java.time.Instant
 import java.util.*
 import javax.inject.Inject
 import kotlin.random.Random
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.microseconds
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
 
 private val empty = Post(
     id = 0,
@@ -51,14 +46,13 @@ class PostViewModel @Inject constructor(
 
     private val cashed = repository.data
         .cachedIn(viewModelScope)
-        .also{ println("post VM data work ${repository.data}")}
 
     val data: Flow<PagingData<FeedItem>> = appAuth
         .authStateFlow
         .flatMapLatest { (myId, _) ->
             cashed.map { posts ->
                 posts.map {
-                    it.copy(ownedByMe = it.authorId == myId)
+                    it.copy(ownedByMe = it.authorId == myId, likedByMe = it.likeOwnerIds.contains(myId))
 //                        .also {
 //                            println(
 //                                " ${it.id} ${
@@ -84,17 +78,17 @@ class PostViewModel @Inject constructor(
 //                        null
 //                    }
 //                }
-                    .insertSeparators { previous, next ->
-                    if (previous?.id?.rem(5) == 0L) {
-                        Ad(
-                            Random.nextLong(),
-                            url = "https://netology.ru",
-                            image = "Figma.jpg"
-                        ).also { println("${previous.id}  ${next?.id}") }
-                    } else {
-                        null
-                    }
-                }
+//                    .insertSeparators { previous, next ->
+//                    if (previous?.id?.rem(5) == 0L) {
+//                        Ad(
+//                            Random.nextLong(),
+//                            url = "https://netology.ru",
+//                            image = "Figma.jpg"
+//                        )
+//                    } else {
+//                        null
+//                    }
+//                }
             }
         }
 
@@ -123,7 +117,6 @@ class PostViewModel @Inject constructor(
          repository.getNewerCount()
             .catch { e -> e.printStackTrace() }
             .asLiveData(Dispatchers.Default)
-            .also { println("PVM newer work") }
     }
 
     private val _photo = MutableLiveData(noPhoto)
@@ -137,6 +130,7 @@ class PostViewModel @Inject constructor(
 
     fun loadPosts() = viewModelScope.launch {
         try {
+            println("Load posts work")
             _dataState.value = FeedModelState(loading = true)
             repository.getAll()
             _dataState.value = FeedModelState()
@@ -157,6 +151,7 @@ class PostViewModel @Inject constructor(
     fun save() {
         edited.value?.let {
             _postCreated.postValue(Unit)
+            it.published = Instant.now().toString()
             viewModelScope.launch {
                 try {
                     when(_photo.value) {

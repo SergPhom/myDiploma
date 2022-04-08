@@ -2,6 +2,7 @@ package ru.netology.nework.entity
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -9,7 +10,7 @@ import ru.netology.nework.enumeration.EventType
 import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Coordinates
 import ru.netology.nmedia.dto.Event
-import java.time.Instant
+import java.sql.Types
 
 @Entity
 data class EventEntity(
@@ -23,34 +24,36 @@ data class EventEntity(
     val published: String?,
     @Embedded
     val coords: Coordinates? = null,
-    val eventType: EventType,
+    val eventType: EventType?,
     var likeOwnerIds: List<Long> = emptyList(),
+    @ColumnInfo(typeAffinity = Types.INTEGER)
     val likedByMe: Boolean,
     val speakerIds: List<Long> = emptyList(),
     val participantsIds: List<Long> = emptyList(),
+    @ColumnInfo(typeAffinity = Types.INTEGER)
     val participatedByMe: Boolean,
     @Embedded
     val attachment: Attachment? = null,
     val link: String? = null,
 ) {
     @RequiresApi(Build.VERSION_CODES.O)
-    fun toDto(myId: Long) = Event(
+    fun toDto() = Event(
         id = id,
         authorId = authorId,
         author = author,
         authorAvatar = authorAvatar,
         content = content,
-        datetime = Instant.parse(datetime),
-        published = Instant.parse(published),
+        datetime = datetime ?: "",
+        published = published ?: "",
         coords = coords,
-        eventType = eventType,
+        type = eventType?.name ?: "",
         likeOwnerIds = likeOwnerIds,
-        likedByMe = likeOwnerIds.contains(myId),
+        likedByMe = likedByMe,
         speakerIds = speakerIds,
         participantsIds = participantsIds,
-        participatedByMe = participantsIds.contains(myId),
+        participatedByMe = participatedByMe,
         link = link,
-        //attachment TODO
+        attachment = attachment
     )
 
     companion object {
@@ -60,21 +63,21 @@ data class EventEntity(
             author = dto.author,
             authorAvatar = dto.authorAvatar,
             content = dto.content,
-            datetime = dto.datetime.toString(),
-            published = dto.published.toString(),
+            datetime = dto.datetime,
+            published = dto.published,
             coords = dto.coords,
-            eventType = dto.eventType,
+            eventType = dto.type?.let { EventType.valueOf(it) },
             likeOwnerIds = dto.likeOwnerIds,
             likedByMe = dto.likedByMe,
             speakerIds = dto.speakerIds,
             participantsIds = dto.participantsIds,
             participatedByMe = dto.participatedByMe,
             link = dto.link,
-            //AttachmentEmbeddable.fromDto(dto.attachment),
+            attachment = dto.attachment,
         )
     }
 }
 @RequiresApi(Build.VERSION_CODES.O)
-fun List<EventEntity>.toDto(myId: Long): List<Event> = map { it.toDto(myId) }
+fun List<EventEntity>.toDto(myId: Long): List<Event> = map { it.toDto() }
 
 fun List<Event>.fromDto(): List<EventEntity> = map(EventEntity::fromDto)

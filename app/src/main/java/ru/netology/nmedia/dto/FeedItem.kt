@@ -6,10 +6,7 @@ import android.os.Parcelable
 import androidx.annotation.RequiresApi
 import kotlinx.parcelize.Parceler
 import kotlinx.parcelize.Parcelize
-import ru.netology.nework.enumeration.EventType
 import ru.netology.nmedia.enumeration.AttachmentType
-import ru.netology.nmedia.enumeration.Authorities
-import java.time.Instant
 import java.util.stream.Collectors
 
 sealed interface FeedItem {
@@ -35,7 +32,7 @@ data class Post(
     val author: String,
     val authorAvatar: String? = "",
     val content: String,
-    val published: String,
+    var published: String,
     val likeOwnerIds: List<Long> = emptyList(),
     val likedByMe: Boolean = false,
     val attachment: Attachment? = null,
@@ -45,7 +42,7 @@ data class Post(
     val mentionIds: List<Long> = emptyList(),
     val mentionedMe: Boolean = false,
 
-): Parcelable, FeedItem {
+    ): Parcelable, FeedItem {
     @RequiresApi(Build.VERSION_CODES.O)
     constructor(parcel: Parcel) : this(
         id = parcel.readLong(),
@@ -102,57 +99,6 @@ data class Post(
     }
 
 }
-
-@Parcelize
-data class User(
-    val id: Long,
-    val login: String,
-    val name: String,
-    val avatar: String?,
-    //val authorities: Authorities?,
-): Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readLong()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        parcel.readString()!!,
-        //TODO("authorities")
-    )
-
-    companion object : Parceler<User> {
-
-        override fun User.write(parcel: Parcel, flags: Int) {
-            parcel.writeLong(id)
-            parcel.writeString(login)
-            parcel.writeString(name)
-            parcel.writeString(avatar)
-        }
-
-        override fun create(parcel: Parcel): User {
-            return User(parcel)
-        }
-    }
-}
-
-@Parcelize
-data class Event(
-    val id: Long,
-    val authorId: Long,
-    val author: String,
-    val authorAvatar: String?,
-    val content: String,
-    val datetime: Instant? = null,
-    val published: Instant? = null,
-    val coords: Coordinates? = null,
-    val eventType: EventType,
-    val likeOwnerIds: List<Long> = emptyList(),
-    val likedByMe: Boolean = false,
-    val speakerIds:  List<Long> = emptyList(),
-    val participantsIds:  List<Long> = emptyList(),
-    val participatedByMe: Boolean = false,
-    val attachment: Attachment? = null,
-    val link: String? = null,
-) : Parcelable
 
 @Parcelize
 data class Attachment(

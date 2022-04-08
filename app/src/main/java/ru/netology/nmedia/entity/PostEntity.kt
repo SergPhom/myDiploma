@@ -63,22 +63,21 @@ data class PostEntity(
         fun fromDto(dto: Post): PostEntity{
             lateinit var entity: PostEntity
             try {
-                 println("post entity work fromDTO. dto is $dto")
                  entity = PostEntity(id =dto.id,
-                    authorId = dto.authorId,
-                    author = dto.author,
-                    authorAvatar = dto.authorAvatar ?: "",
-                    content = dto.content,
-                    published = dto.published.toString(),
-                    likedByMe = dto.likedByMe,
-                    attachment = dto.attachment,
-                    coords = dto.coords,
-                    link = "")
-                 println("post entity work from dto. result is ${entity.attachment?.javaClass}")
-
+                     authorId = dto.authorId,
+                     author = dto.author,
+                     authorAvatar = dto.authorAvatar ?: "",
+                     content = dto.content,
+                     published = dto.published,
+                     likedByMe = dto.likedByMe,
+                     likeOwnerIds = dto.likeOwnerIds,
+                     attachment = dto.attachment,
+                     coords = dto.coords,
+                     link = "")
             }catch (t: Throwable){
                 println("post entity error is $t")
             }
+            println("Entity is $entity")
             return entity
         }
     }

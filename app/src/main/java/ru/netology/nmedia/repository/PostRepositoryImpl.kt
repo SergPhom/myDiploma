@@ -38,7 +38,6 @@ class PostRepositoryImpl @Inject constructor(
         .map { it.map(PostEntity::toDto) }
         .catch { println("Post repo error $it") }
         .flowOn(Dispatchers.Default)
-        .also { println("Post repo data work") }
 
 
 
@@ -50,6 +49,7 @@ class PostRepositoryImpl @Inject constructor(
             }
 
             val body = response.body() ?: throw ApiError(response.code(), response.message())
+            println("PostRepository body is $body")
             dao.insert(body.toEntity())
         } catch (e: IOException) {
             throw NetworkError

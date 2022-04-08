@@ -40,6 +40,7 @@ interface Callback {
     fun onSingleView(post: Post){}
     fun onSingleViewImageOnly(post: Post){}
     fun onSavingRetry(post: Post){}
+    fun onUserProfile(author: String){}
 }
 
 class PostsAdapter(
@@ -50,22 +51,20 @@ class PostsAdapter(
         val anim = holder.itemView.getTag(R.id.likes + holder.absoluteAdapterPosition)
         //завершаем анимацию при выходе за пределы экрана
         if( anim != null){
-            println("not empty")
             (anim as ObjectAnimator).end()
-        } else println ("animation tag not found")
+        }
     }
 
     override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
         val anim = holder.itemView.getTag(R.id.likes + holder.absoluteAdapterPosition)
         //ещё шанс посмотреть остановленную анимацию при возврате на экран
         if(anim != null ){
-            println("not empty")
             (anim as ObjectAnimator).start()
             //удаляем анимацию при её остановки
             anim.doOnEnd {
                 holder.itemView.setTag(R.id.likes + holder.absoluteAdapterPosition, null)
             }
-        } else println ("animation tag not found")
+        }
     }
 
     override fun getItemViewType(position: Int): Int =
@@ -231,9 +230,6 @@ class PostViewHolder(
             author.text = "${post.author}  ${post.id}"
             published.text = formatter.format(Instant.parse(post.published))
             content.text = post.content
-//            shares.text = post.count(post.shares)
-//            viewes.text = "${post.viewes}"
-//
             likes.text = "${post.likeOwnerIds.size}"
             likes.setIconResource(
                 if (post.likedByMe) R.drawable.ic_liked_24 else R.drawable.ic_likes_24
@@ -244,11 +240,6 @@ class PostViewHolder(
             //******************************************************************Listeners
             likes.setOnClickListener {
                 callback.onLiked(post)
-            }
-
-            shares.setOnClickListener {
-                callback.onShared(post)
-                shares.isChecked = false
             }
 
             menu.visibility = if (post.ownedByMe) View.VISIBLE else View.INVISIBLE
@@ -284,7 +275,7 @@ class PostViewHolder(
             videoPlay.setOnClickListener {
                 callback.onPlay(post)
             }
-            author.setOnClickListener{ callback.onSingleView(post)}
+            author.setOnClickListener{ callback.onUserProfile(post.author)}
             avatar.setOnClickListener{ callback.onSingleView(post)}
             content.setOnClickListener{ callback.onSingleView(post)}
             published.setOnClickListener{ callback.onSingleView(post)}

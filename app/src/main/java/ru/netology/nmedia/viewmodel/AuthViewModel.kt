@@ -1,5 +1,6 @@
 package ru.netology.nmedia.viewmodel
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.widget.Toast
@@ -8,8 +9,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import ru.netology.nmedia.R
 import ru.netology.nmedia.api.UsersApiService
 import ru.netology.nmedia.auth.AppAuth
@@ -46,15 +50,18 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun getToken(login: String, pass: String): Boolean{
-        viewModelScope.launch {
+    suspend fun getToken(login: String, pass: String): Boolean{
+        var result = false
+        viewModelScope.async{
             try {
                 val response = usersApiService.getToken(login,pass)
-                if (!response.isSuccessful) {
-                    throw ApiError(response.code(), response.message())
+                if (response.isSuccessful) {
+                    println("AuthVM1 is $result")
+                    val body = response.body() ?: throw ApiError(response.code(), response.message())
+                    setAuth(body.id, body.token)
+                    result = true
+                    println("AuthVM2 is $result")
                 }
-                val body = response.body() ?: throw ApiError(response.code(), response.message())
-                setAuth(body.id, body.token)
             } catch (e: IOException) {
                 throw NetworkError
             } catch (e: Exception) {
@@ -62,7 +69,8 @@ class AuthViewModel @Inject constructor(
             } catch (e: Throwable) {
                 println ("AVM e 2 $e")
             }
-        }
-        return true
+        }.await()
+        println("AuthVM3 is $result")
+        return result
     }
 }

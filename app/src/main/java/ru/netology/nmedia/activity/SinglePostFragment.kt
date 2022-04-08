@@ -46,7 +46,7 @@ class SinglePostFragment: Fragment() {
                 try{
                     findNavController().navigateUp()
                 }catch (e: Throwable){
-                    println("aaaa $e")
+                    println("SinglePostFragment error is $e")
                 }
             }
         }

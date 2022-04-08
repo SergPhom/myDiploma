@@ -1,6 +1,5 @@
 package ru.netology.nmedia.repository
 
-import androidx.activity.viewModels
 import androidx.paging.*
 import androidx.room.withTransaction
 import retrofit2.Response
@@ -25,19 +24,18 @@ class PostRemoteMediator @Inject constructor(
 
     override suspend fun initialize(): InitializeAction =
         if(dao.isEmpty()){
-            println("remMedi DB is empty")
             InitializeAction.LAUNCH_INITIAL_REFRESH
         } else {
-            println("remMedi DB is NOT empty")
             InitializeAction.SKIP_INITIAL_REFRESH
         }
 
-    private fun checkResponce(response: Response<List<Post>>): List<Post>{
+    private fun checkResponse(response: Response<List<Post>>): List<Post> {
         if (!response.isSuccessful) {
             throw ApiError(response.code(), response.message())
         }
-        val posts = response.body() ?: throw ApiError(response.code(), response.message())
-        return posts
+        val body = response.body()
+        //body?.forEach { println("Response is $it") }
+        return body ?: throw ApiError(response.code(), response.message())
     }
 
     override suspend fun load(
@@ -45,10 +43,9 @@ class PostRemoteMediator @Inject constructor(
         state: PagingState<Int, PostEntity>
     ): MediatorResult {
         try{
-            println("remMedi load work")
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    println("remMedi load work refresh")
+                    println("refresh working")
                     if (postRemoteKeyDao.isEmpty()) {
                         apiService.getLatest(state.config.pageSize)
                     } else{
@@ -58,18 +55,18 @@ class PostRemoteMediator @Inject constructor(
                     }
                 }
                 LoadType.APPEND -> {
-                    println("remMedi load work append")
+                    println("append working")
                     val id = postRemoteKeyDao.min() ?:
                         return MediatorResult.Success(false)
                     apiService.getBefore(
                         id, state.config.pageSize)
                 }
                 LoadType.PREPEND -> {
+                    println("prepend  working")
                     return MediatorResult.Success(false)
                 }
             }
-            var posts = checkResponce(response)
-            println("remMedi load work posts granted ${posts.size}")
+            var posts = checkResponse(response)
             db.withTransaction {
                 when(loadType){
                     LoadType.REFRESH->{

@@ -55,7 +55,7 @@ class NewPostFragment: Fragment() {
                     viewModel.draft = binding.content.text.toString()
                     findNavController().navigateUp()
                 }catch (e: Throwable){
-                    println("aaaa $e")
+                    println("NewPostFragment error is $e")
                 }
             }
         }

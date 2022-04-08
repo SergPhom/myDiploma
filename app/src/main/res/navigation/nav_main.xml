@@ -41,6 +41,12 @@
         <action
             android:id="@+id/action_feedFragment_to_eventFragment"
             app:destination="@id/eventFragment" />
+        <action
+            android:id="@+id/action_feedFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+        <argument
+            android:name="userName"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/newPostFragment"
@@ -73,9 +79,18 @@
     <fragment
         android:id="@+id/eventFragment"
         android:name="ru.netology.nmedia.activity.EventFragment"
-        android:label="EventFragment" >
+        android:label="EventFragment"
+        tools:layout="@layout/fragment_event">
         <action
             android:id="@+id/action_eventFragment_to_feedFragment"
             app:destination="@id/feedFragment" />
+        <action
+            android:id="@+id/action_eventFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="ru.netology.nmedia.activity.UserProfileFragment"
+        android:label="UserProfileFragment"
+        tools:layout="@layout/fragment_user_profile"/>
 </navigation>
