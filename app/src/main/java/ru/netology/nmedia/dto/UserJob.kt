@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 
 @Parcelize
-data class Job(
+data class UserJob(
     val id: Long,
     val name: String,
     val position: String,

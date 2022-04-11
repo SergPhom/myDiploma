@@ -47,10 +47,8 @@ class EventRemoteMediator @Inject constructor(
         state: PagingState<Int, EventEntity>
     ): MediatorResult {
         try{
-            println("Event remMedi load work")
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    println("Event remMedi load work refresh")
                     if (eventRemoteKeyDao.isEmpty()) {
                         apiService.getLatest(state.config.pageSize)
                     } else{
@@ -70,7 +68,7 @@ class EventRemoteMediator @Inject constructor(
                 }
             }
             var events = checkResponse(response)
-            println("remMedi load work events granted ${events.size}. response is ${response.body()}")
+
             db.withTransaction {
                 when(loadType){
                     LoadType.REFRESH->{
@@ -97,7 +95,6 @@ class EventRemoteMediator @Inject constructor(
                         )
                     }
                 }
-                println("EventRemMedi. Events is $events")
                 dao.insert(events.map(EventEntity::fromDto))
             }
             return MediatorResult.Success(events.isEmpty())

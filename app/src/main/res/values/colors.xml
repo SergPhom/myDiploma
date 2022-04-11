@@ -13,4 +13,5 @@
     <color name="transparent">#00000000</color>
     <color name="divider_color">#ccc</color>
     <color name="cancel_red">#FF0000</color>
+    <color name="calendar_tint">#65ACE4</color>
 </resources>

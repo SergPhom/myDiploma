@@ -45,4 +45,14 @@ object DbModule {
     fun provideEventRemoteKeyDao(
         appDb: AppDb
     ): EventRemoteKeyDao = appDb.eventRemoteKeyDao()
+
+    @Provides
+    fun provideJobDao(
+        appDb: AppDb
+    ): JobDao = appDb.jobDao()
+
+    @Provides
+    fun provideJobRemoteKeyDao(
+        appDb: AppDb
+    ): JobRemoteKeyDao = appDb.jobRemoteKeyDao()
 }

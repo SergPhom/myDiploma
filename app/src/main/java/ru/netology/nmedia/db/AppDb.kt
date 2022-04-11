@@ -9,16 +9,12 @@ import ru.netology.nework.entity.EventEntity
 import ru.netology.nework.entity.JobEntity
 import ru.netology.nework.entity.UserEntity
 import ru.netology.nmedia.dao.*
-import ru.netology.nmedia.entity.EventRemoteKeyEntity
-import ru.netology.nmedia.entity.ListConverter
-import ru.netology.nmedia.entity.PostEntity
-import ru.netology.nmedia.entity.PostRemoteKeyEntity
+import ru.netology.nmedia.entity.*
 
 
 @Database(entities = [PostEntity::class, PostRemoteKeyEntity::class, UserEntity::class,
-    EventEntity::class, EventRemoteKeyEntity::class
-    //, JobEntity::class
-                     ],  version = 7, exportSchema = false)
+    EventEntity::class, EventRemoteKeyEntity::class, JobEntity::class,
+    JobRemoteKeyEntity::class],  version = 9, exportSchema = false)
 @TypeConverters(ListConverter::class)
 abstract  class AppDb : RoomDatabase() {
 
@@ -28,6 +24,7 @@ abstract  class AppDb : RoomDatabase() {
     abstract fun eventDao(): EventDao
     abstract fun eventRemoteKeyDao(): EventRemoteKeyDao
     abstract fun jobDao(): JobDao
+    abstract fun jobRemoteKeyDao(): JobRemoteKeyDao
     companion object{
         fun buildDatabase(context: Context): AppDb{
             lateinit var db: AppDb

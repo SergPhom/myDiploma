@@ -37,4 +37,6 @@
     <string name="company_name">Company Name:</string>
     <string name="position_in_company">Position in company:</string>
     <string name="start_date">Start date:</string>
+    <string name="finish_date">Finish date</string>
+    <string name="job_warning">Please, fill in all  required fields </string>
 </resources>

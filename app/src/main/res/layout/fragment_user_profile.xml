@@ -31,7 +31,9 @@
         app:layout_constraintTop_toTopOf="@+id/avatar"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="@sample/posts.json/data/author" />
-    <ScrollView
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,8 +43,108 @@
             android:id="@+id/jobList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:listitem="@layout/card_job"/>
-    </ScrollView>
+            tools:listitem="@layout/card_job"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            
+        />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <CalendarView
+        android:id="@+id/calendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/calendar_tint"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </CalendarView>
+    <LinearLayout
+        android:id="@+id/jobEditCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="vertical"
+        android:background="@color/purple_500"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/companyName"
+            android:layout_width="300dp"
+            android:layout_height="30dp"
+            android:background="@color/divider_color"
+            android:hint="@string/company_name"
+            android:importantForAutofill="no"
+            android:textColor="#000000"
+            tools:text="@string/company_name"
+            android:layout_margin="@dimen/little_offset"
+            />
+
+        <EditText
+            android:id="@+id/position"
+            android:layout_width="300dp"
+            android:layout_height="30dp"
+            android:background="@color/divider_color"
+            android:hint="@string/position_in_company"
+            android:importantForAutofill="no"
+            android:textColor="#000000"
+            tools:text="@string/position_in_company"
+            android:layout_margin="@dimen/little_offset"
+            />
+
+        <EditText
+            android:id="@+id/startDate"
+            android:layout_width="300dp"
+            android:layout_height="30dp"
+            android:background="@color/divider_color"
+            android:hint="@string/start_date"
+            android:importantForAutofill="no"
+            tools:text="@string/start_date"
+            android:textColor="#000000"
+            android:layout_margin="@dimen/little_offset"/>
+
+        <EditText
+            android:id="@+id/finishDate"
+            android:layout_width="300dp"
+            android:layout_height="30dp"
+            android:background="@color/divider_color"
+            android:hint="@string/finish_date"
+            android:importantForAutofill="no"
+            tools:text="@string/finish_date"
+            android:textColor="#000000"
+            android:layout_margin="@dimen/little_offset"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:layout_margin="@dimen/little_offset"
+                android:layout_gravity="center"
+                android:id="@+id/enterButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/description_post_save"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="#000000"
+                tools:text="@string/description_post_save" />
+            <Button
+                android:layout_margin="@dimen/little_offset"
+                android:layout_gravity="center"
+                android:id="@+id/cancelButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="#000000"
+                tools:text="@string/cancel" />
+        </LinearLayout>
+
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

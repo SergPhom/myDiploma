@@ -74,7 +74,7 @@ class EventViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     @RequiresApi(Build.VERSION_CODES.O)
-    val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+    val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
         .withZone( ZoneId.systemDefault() )
 
     @RequiresApi(Build.VERSION_CODES.O)

@@ -77,7 +77,6 @@ class EventFragment: Fragment() {
             }
         })
 
-        println("EventAdapter is $adapter")
         binding.eventList.adapter = adapter
 
         binding.refresh.setOnRefreshListener {

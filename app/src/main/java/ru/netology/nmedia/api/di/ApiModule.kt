@@ -14,6 +14,7 @@ import retrofit2.create
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.TOKEN_KEY
 import ru.netology.nmedia.api.EventApiService
+import ru.netology.nmedia.api.JobApiService
 import ru.netology.nmedia.api.PostsApiService
 import ru.netology.nmedia.api.UsersApiService
 import javax.inject.Singleton
@@ -78,6 +79,12 @@ object ApiModule {
     fun provideEventApiService(
         retrofit: Retrofit
     ): EventApiService = retrofit.create()
+
+    @Provides
+    @Singleton
+    fun provideJobApiService(
+        retrofit: Retrofit
+    ): JobApiService = retrofit.create()
 
     @Provides
     @Singleton

@@ -36,4 +36,6 @@
     <string name="company_name">Название компании:</string>
     <string name="position_in_company">Должность в компании:</string>
     <string name="start_date">Дата начала:</string>
+    <string name="finish_date">Дата окончания:</string>
+    <string name="job_warning">Пожалуйста,заполните обязательные поля</string>
 </resources>
