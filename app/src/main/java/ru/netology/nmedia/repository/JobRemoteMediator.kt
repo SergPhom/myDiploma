@@ -47,7 +47,6 @@ class JobRemoteMediator @Inject constructor(
         state: PagingState<Int, JobEntity>
     ): MediatorResult {
         try {
-            println("JRM load type is $loadType")
             val response = when (loadType){
                 LoadType.REFRESH -> {
                     if (jobRemoteKeyDao.isEmpty()){

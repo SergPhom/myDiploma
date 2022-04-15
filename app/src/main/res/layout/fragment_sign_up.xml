@@ -8,7 +8,20 @@
     android:layout_height="match_parent"
     tools:context=".activity.SignUpFragment">
 
+    <ImageView
+        android:clickable="true"
+        android:id="@+id/avatar"
+        android:layout_marginTop="@dimen/offset"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/form"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_cancel_24"/>
+
     <LinearLayout
+        android:id="@+id/form"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

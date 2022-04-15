@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -93,9 +92,9 @@ class PostRepositoryImpl @Inject constructor(
             throw UnknownError
         }
     }
-    override suspend fun savePostWithAttachment(post: Post, upload: MediaUpload) {
+    override suspend fun savePostWithAttachment(post: Post, uploadItem: MediaUpload) {
         try {
-            val media = upload(upload)
+            val media = upload(uploadItem)
             // TODO: add support for other types
             val postWithAttachment = post.copy(attachment = Attachment(media.id, "MyPhoto",AttachmentType.IMAGE))
             savePost(postWithAttachment)
@@ -179,8 +178,7 @@ class PostRepositoryImpl @Inject constructor(
     override suspend fun upload(upload: MediaUpload): Media {
         try {
             val media = MultipartBody.Part.createFormData(
-                "file", upload.file.name, upload.file.asRequestBody()
-            )
+                "file", upload.file.name, upload.file.asRequestBody())
 
             val response = postsApiService.upload(media)
             if (!response.isSuccessful) {

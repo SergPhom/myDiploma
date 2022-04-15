@@ -1,6 +1,8 @@
 package ru.netology.nmedia.api
 
 
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.*
 import ru.netology.nmedia.dto.User
@@ -20,6 +22,16 @@ interface UsersApiService {
         @Field("login") login:String,
         @Field("pass") pass: String,
         @Field("name") name: String): Response<UserIdToken>
+
+
+    @POST("users/registration")
+    @Multipart
+    suspend fun registrationWithAvatar (
+        @Part("login") login: String,
+        @Part("pass") pass: String,
+        @Part("name") name: String,
+        @Part file: MultipartBody.Part?): Response<UserIdToken>
+
 
     @GET("users")
     suspend fun getAll(): Response<List<User>>

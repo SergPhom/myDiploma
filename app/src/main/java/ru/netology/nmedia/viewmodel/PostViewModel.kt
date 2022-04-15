@@ -98,7 +98,9 @@ class PostViewModel @Inject constructor(
     }
 
     val authenticated = appAuth
-        .authStateFlow.map { it.id != 0L }
+        .authStateFlow.map {
+            it.id != 0L
+        }
         .asLiveData(Dispatchers.Default)
 
 

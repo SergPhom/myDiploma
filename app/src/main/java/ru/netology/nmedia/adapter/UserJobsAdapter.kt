@@ -62,7 +62,6 @@ class JobViewHolder(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun bind(userJob: UserJob){
-        println("UserJob adapter is $userJob")
         binding.apply {
             companyName.text = userJob.name
             position.text = userJob.position

@@ -47,6 +47,12 @@
         <argument
             android:name="userName"
             app:argType="string" />
+        <argument
+            android:name="userId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_feedFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/newPostFragment"
@@ -93,4 +99,9 @@
         android:name="ru.netology.nmedia.activity.UserProfileFragment"
         android:label="UserProfileFragment"
         tools:layout="@layout/fragment_user_profile"/>
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="ru.netology.nmedia.activity.MapsFragment"
+        android:label="MapsFragment"
+        tools:layout="@layout/fragment_map"/>
 </navigation>

@@ -93,9 +93,9 @@ class FeedFragment: Fragment(){
                 viewModel.save()
             }
 
-            override fun onUserProfile(author: String) {
+            override fun onUserProfile(author: String, authorId: Long) {
                 findNavController().navigate(R.id.action_feedFragment_to_userProfileFragment,
-                    bundleOf("userName" to author)  )
+                    bundleOf("userName" to author, "userId" to authorId)  )
             }
         })
 
@@ -148,7 +148,7 @@ class FeedFragment: Fragment(){
 //        }
 
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_userProfileFragment)
+            findNavController().navigate(R.id.action_feedFragment_to_mapsFragment)
 //            if(viewModel.authenticated.value == true){
 //                viewModel.forAuthenticated()
 //                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)

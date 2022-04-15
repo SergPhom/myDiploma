@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -54,6 +55,18 @@ class UserProfileFragment: Fragment() {
         val adapter = UserJobsAdapter()
         lateinit var startDate: LocalDateTime
 
+        if (id != null) {
+            viewModel.id.value = id
+            println(" id is ${viewModel.id.value}")
+        }
+        viewModel.id.observe(viewLifecycleOwner){
+            viewModel.isMyId.observe(viewLifecycleOwner){
+                println(" isMyId is $it")
+                binding.fab.isVisible = it
+            }
+        }
+
+
         fun clearAll(){
             binding.companyName.text.clear()
             binding.position.text.clear()
@@ -77,7 +90,7 @@ class UserProfileFragment: Fragment() {
 //                LinearLayoutManager.HORIZONTAL
 //            )
         )
-        //binding.fab.isVisible = (appAuth.authStateFlow.value.id == id)
+
         binding.fab.setOnClickListener {
             binding.jobEditCard.visibility = View.VISIBLE
             binding.fab.visibility = View.GONE
@@ -125,7 +138,6 @@ class UserProfileFragment: Fragment() {
             adapter.refresh()
         }
         lifecycleScope.launchWhenCreated {
-            println("this1 working")
             viewModel.data.collectLatest(adapter::submitData)
         }
 

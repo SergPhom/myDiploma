@@ -89,7 +89,9 @@ class NewPostFragment: Fragment() {
         }
 
         val pickPhotoLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) {
                 when (it.resultCode) {
                     ImagePicker.RESULT_ERROR -> {
                         Snackbar.make(
@@ -100,7 +102,9 @@ class NewPostFragment: Fragment() {
                     }
                     Activity.RESULT_OK -> {
                         val uri: Uri? = it.data?.data
+                        println("URI IS $uri")
                         viewModel.changePhoto(uri, uri?.toFile())
+
                     }
                 }
             }
