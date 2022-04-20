@@ -45,4 +45,5 @@
     <string name="link_https">Ссылка(Https://..)</string>
     <string name="set_time">Установить</string>
     <string name="days"> дней. </string>
+    <string name="set">Установить</string>
 </resources>

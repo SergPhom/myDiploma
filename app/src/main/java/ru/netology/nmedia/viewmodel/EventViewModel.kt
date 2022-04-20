@@ -17,13 +17,14 @@ import ru.netology.nmedia.dto.Coordinates
 import ru.netology.nmedia.dto.Event
 import ru.netology.nmedia.repository.event.EventRepository
 import java.time.Instant
+import java.time.OffsetDateTime
 import javax.inject.Inject
 
 private val empty = Event(
     id = 0,
     content = "",
     authorId = 1L,
-    datetime = "2021-09-17T16:46:58.887547Z",
+    datetime = "",
     author = "",
     authorAvatar = "",
     likedByMe = false,
@@ -40,13 +41,13 @@ class EventViewModel @Inject constructor(
 ): ViewModel() {
 
     val edited = MutableLiveData(empty)
+    val datetime = MutableLiveData(OffsetDateTime.MIN)
+    val type = MutableLiveData(EventType.NONE)
     private val cashed = repository.data
         .cachedIn(viewModelScope)
     val data: Flow<PagingData<Event>> = cashed
 
     fun changeEvent(content: String,
-                    date: String,
-                    type: EventType,
                     link: String?,
                     coords: Coordinates?
     ) {
@@ -55,8 +56,8 @@ class EventViewModel @Inject constructor(
             return
         }
         edited.value = edited.value?.copy(content = text,
-            datetime = date,
-            type = type.toString(),
+            datetime = datetime.value.toString(),
+            type = type.value.toString(),
             link = link,
             coords = coords
         )

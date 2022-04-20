@@ -11,12 +11,15 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nework.enumeration.EventType
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentNewEventBinding
+import ru.netology.nmedia.dto.Coordinates
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.viewmodel.EventViewModel
+import ru.netology.nmedia.viewmodel.MapViewModel
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -25,7 +28,9 @@ import java.time.format.FormatStyle
 class NewEventFragment: Fragment() {
 
     private val viewModel: EventViewModel by viewModels(ownerProducer = ::requireParentFragment)
+    private val mapViewModel: MapViewModel by viewModels(ownerProducer = ::requireParentFragment)
     private var fragmentBinding: FragmentNewEventBinding? = null
+    lateinit var binding: FragmentNewEventBinding
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
@@ -35,26 +40,50 @@ class NewEventFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val binding = FragmentNewEventBinding.inflate(
+        binding = FragmentNewEventBinding.inflate(
             inflater, container,false
         )
-        var type: EventType? = null
         binding.calendar.visibility = View.GONE
 
+        val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
         var date = LocalDate.of(1,1,1)
-        var datetime: OffsetDateTime
+
+
+        if(viewModel.datetime.value != OffsetDateTime.MIN){
+            binding.date.setText(formatter.format(viewModel.datetime.value?.toLocalDate()))
+        }
+        binding.content.setText(viewModel.edited.value?.content)
+        if(mapViewModel.coords.value != LatLng(55.751999, 37.617734)){
+            binding.place.isChecked = true
+        }
+        when(viewModel.type.value){
+            EventType.NONE -> {}
+            EventType.OFFLINE -> binding.online.visibility = View.GONE
+            EventType.ONLINE -> binding.offline.visibility = View.GONE
+        }
 
         binding.okButton.setOnClickListener {
-            if (type == null || binding.date.text.isNullOrBlank()) {
+            if (viewModel.type.value == EventType.NONE
+                || viewModel.datetime.value == OffsetDateTime.MIN
+            ) {
+                println("new event ${viewModel.type.value == EventType.NONE}  ${viewModel.datetime.value == OffsetDateTime.MIN}")
                 Toast.makeText(activity, R.string.job_warning, Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             } else{
                 viewModel.changeEvent(
                     content = binding.content.text.toString(),
-                    date = date.toString(),
-                    type = type!!,
                     link = binding.link.text.toString(),
-                    coords = null)
+                    coords = when(mapViewModel.coords.value){
+                        LatLng(55.751999, 37.617734) -> null
+                        else -> mapViewModel.coords.value?.latitude?.let { it1 ->
+                            mapViewModel.coords.value?.longitude?.let { it2 ->
+                                Coordinates(
+                                    it1,
+                                    it2
+                                )
+                            }
+                        }
+                    })
             }
             viewModel.save()
             AndroidUtils.hideKeyboard(requireView())
@@ -67,37 +96,42 @@ class NewEventFragment: Fragment() {
 
         binding.calendar.setOnDateChangeListener { _, i, i2, i3 ->
             date = LocalDate.of(i,i2+1,i3)
-            println("date is $date } ")
-            val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
             binding.calendar.visibility = View.GONE
             binding.date?.setText(formatter.format(date))
             binding.timer.visibility = View.VISIBLE
-        }
-        binding.timer.setOnTimeChangedListener { _, i, i2 ->
-            datetime = date.atTime(i,i2,58,555).atOffset(ZoneOffset.UTC)
-            //binding.timer.visibility = View.GONE
-            println("datetime is $datetime")
+
         }
 
         binding.setTime.setOnClickListener {
+            viewModel.datetime.value = date
+                .atTime(binding.timer.hour,binding.timer.minute,58,1000000).atOffset(ZoneOffset.UTC)
+            println("datetime is ${viewModel.datetime.value}")
+
             binding.timer.visibility = View.GONE
         }
 
         binding.online.setOnClickListener {
             binding.offline.visibility = View.GONE
             binding.link.visibility = View.VISIBLE
-            type = EventType.ONLINE
+            viewModel.type.value = EventType.ONLINE
         }
 
         binding.offline.setOnClickListener {
             binding.online.visibility = View.GONE
             binding.place.visibility = View.VISIBLE
-            type = EventType.OFFLINE
+            viewModel.type.value = EventType.OFFLINE
+        }
+
+        binding.place.setOnClickListener {
+            findNavController().navigate(R.id.action_newEventFragment_to_mapsFragment)
         }
         return binding.root
     }
 
     override fun onDestroyView() {
+        viewModel.edited.value = viewModel.edited.value
+            ?.copy(  link = binding.link.text.toString(),
+                content = binding.content.text.toString())
         fragmentBinding = null
         super.onDestroyView()
     }

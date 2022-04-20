@@ -46,4 +46,5 @@
     <string name="link_https">Link(Https://..)</string>
     <string name="set_time">Set time</string>
     <string name="days">days</string>
+    <string name="set">set</string>
 </resources>

@@ -108,15 +108,10 @@ class EventViewHolder(
                 .withZone( ZoneId.systemDefault() )
 
             val date = Instant.parse(event.datetime).epochSecond
-                .also { println("$it") }
             val now = Instant.now().epochSecond
-                .also { println("$it   diff is ${date - it}") }
             val diff = (date-now)
-                .also { println("$it") }
             val hours = (diff / 3600L)
-                .also { println("$it") }
             val days = (hours / 24L)
-                .also { println("$it") }
             datetime.text = formatter.format(Instant.parse(event.datetime))
             datetimeToGo.text = "$days   days"
 

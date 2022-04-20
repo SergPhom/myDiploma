@@ -11,7 +11,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -24,9 +26,12 @@ import com.google.maps.android.ktx.awaitAnimateCamera
 import com.google.maps.android.ktx.awaitMap
 import com.google.maps.android.ktx.model.cameraPosition
 import ru.netology.nmedia.R
+import ru.netology.nmedia.databinding.FragmentMapBinding
+import ru.netology.nmedia.viewmodel.MapViewModel
 
 class MapsFragment: Fragment() {
     lateinit var googleMap: GoogleMap
+
     @SuppressLint("MissingPermission")
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -41,18 +46,26 @@ class MapsFragment: Fragment() {
             }
         }
 
+    lateinit var binding: FragmentMapBinding
+
+    val viewModel: MapViewModel by viewModels(ownerProducer = ::requireParentFragment)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
+        binding = FragmentMapBinding.inflate(inflater, container, false)
+        println("this step done")
+        return binding.root
 
-        return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        println("here is not go")
         super.onViewCreated(view, savedInstanceState)
+
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 
@@ -72,7 +85,6 @@ class MapsFragment: Fragment() {
                     requireContext(),
                     Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED -> {
-                    println("MapsFragment permission is granted")
                     googleMap.apply {
                         isMyLocationEnabled = true
                         uiSettings.isMyLocationButtonEnabled = true
@@ -82,35 +94,34 @@ class MapsFragment: Fragment() {
                         .getFusedLocationProviderClient(requireActivity())
 
                     fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-                        println(it)
+                        println(" current location is $it")
                     }
                 }
                 // 2. Должны показать обоснование необходимости прав
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                    println("MapsFragment permission is not granted")
                     // TODO: show rationale dialog
                 }
                 else -> {
-                    println("MapsFragment permission is not granted and need request")
                     requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                 }
             }
 
-            val target = LatLng(55.751999, 37.617734)
-            val target1 = LatLng(55.740888, 37.627333)
+            val target = viewModel.coords.value
             val markerManager = MarkerManager(googleMap)
             val collection: MarkerManager.Collection =
                 markerManager.newCollection().apply {
                     addMarker(
-                        MarkerOptions()
-                            .position(target1)
-                            .title("MyMarker")
-                            .draggable(true)
-                            .icon(BitmapDescriptorFactory.fromAsset("sber.bmp"))
+                        target?.let {
+                            MarkerOptions()
+                                .position(it)
+                                .title("MyMarker")
+                                .draggable(true)
+                                .icon(BitmapDescriptorFactory.fromAsset("sber.bmp"))
+                        }
                     ).apply {
-                    tag = "Any additional data" // Any
+                        tag = "Any additional data" // Any
+                    }
                 }
-            }
             collection.setOnMarkerClickListener { marker ->
                 // TODO: work with marker
                 Toast.makeText(
@@ -122,19 +133,24 @@ class MapsFragment: Fragment() {
             }
 
             googleMap.setOnMapLongClickListener {
-            println("map info is $it")
-            markerManager.Collection().addMarker(
-                MarkerOptions()
-                    .position(it)
-                    .title("I pick it")
-                    .draggable(false)
-            )
+                markerManager.Collection().clear()
+                markerManager.Collection().addMarker(
+                    MarkerOptions()
+                        .position(it)
+                        .title("I pick it")
+                        .draggable(false)
+                )
+                viewModel.coords.value = it
+                binding.setButton.visibility = View.VISIBLE
             }
 
+            binding.setButton.setOnClickListener {
+                findNavController().navigateUp()
+            }
             googleMap.awaitAnimateCamera(
                 CameraUpdateFactory.newCameraPosition(
                     cameraPosition {
-                        target(target)
+                        target(target ?: LatLng(55.751999, 37.617734))
                         zoom(13F)
                     }
                 ))
