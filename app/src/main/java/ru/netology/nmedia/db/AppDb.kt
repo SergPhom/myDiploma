@@ -14,7 +14,7 @@ import ru.netology.nmedia.entity.*
 
 @Database(entities = [PostEntity::class, PostRemoteKeyEntity::class, UserEntity::class,
     EventEntity::class, EventRemoteKeyEntity::class, JobEntity::class,
-    JobRemoteKeyEntity::class],  version = 9, exportSchema = false)
+    JobRemoteKeyEntity::class, UserWallEntity::class, UserWallRemoteKeyEntity::class],  version = 10, exportSchema = false)
 @TypeConverters(ListConverter::class)
 abstract  class AppDb : RoomDatabase() {
 
@@ -25,6 +25,8 @@ abstract  class AppDb : RoomDatabase() {
     abstract fun eventRemoteKeyDao(): EventRemoteKeyDao
     abstract fun jobDao(): JobDao
     abstract fun jobRemoteKeyDao(): JobRemoteKeyDao
+    abstract fun userWallDao(): UserWallDao
+    abstract fun userWallRemoteKeyDao(): UserWallRemoteKeyDao
     companion object{
         fun buildDatabase(context: Context): AppDb{
             lateinit var db: AppDb

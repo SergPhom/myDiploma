@@ -5,9 +5,21 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.*
+import ru.netology.nmedia.dto.PushToken
 import ru.netology.nmedia.dto.User
 
 interface UsersApiService {
+
+    @GET("users")
+    suspend fun getAll(): Response<List<User>>
+
+    @GET("users/{id}")
+    suspend fun getUser(@Path("id") id: Long): Response<User>
+
+    @POST("users/push-tokens")
+    suspend fun save(@Body pushToken: PushToken): Response<Unit>
+
+
     @Headers("Content-Type: application/x-www-form-urlencoded")
     @POST("users/authentication")
     @FormUrlEncoded
@@ -32,7 +44,4 @@ interface UsersApiService {
         @Part("name") name: String,
         @Part file: MultipartBody.Part?): Response<UserIdToken>
 
-
-    @GET("users")
-    suspend fun getAll(): Response<List<User>>
 }

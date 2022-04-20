@@ -83,6 +83,10 @@ class EventFragment: Fragment() {
             adapter.refresh()
         }
 
+        binding.fab.setOnClickListener {
+            findNavController().navigate(R.id.action_eventFragment_to_newEventFragment)
+        }
+
         lifecycleScope.launchWhenCreated {
             viewModel.data.collectLatest(adapter::submitData)
         }

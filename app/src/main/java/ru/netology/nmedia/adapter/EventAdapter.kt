@@ -1,5 +1,6 @@
 package ru.netology.nmedia.adapter
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +15,15 @@ import ru.netology.nmedia.databinding.CardEventBinding
 import ru.netology.nmedia.dto.Event
 import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.view.load
-import ru.netology.nmedia.view.loadCircleCrop
+import ru.netology.nmedia.view.loadAvatar
+import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.time.temporal.ChronoUnit
+import java.util.*
+import kotlin.time.Duration.Companion.days
 
 
 interface EventCallback {
@@ -77,10 +82,11 @@ class EventViewHolder(
     val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
         .withZone( ZoneId.systemDefault() )
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
     fun bind(event: Event) {
         binding.apply {
-            avatar.loadCircleCrop("${BuildConfig.BASE_URL}/avatars/${event.authorAvatar}")
+            event.authorAvatar?.let { avatar.loadAvatar(it) }
             author.text = "${event.author}  ${event.id}"
             published.text = formatter.format(Instant.parse(event.published))
             content.text = event.content
@@ -96,6 +102,23 @@ class EventViewHolder(
             likes.setOnClickListener {
                 callback.onLiked(event)
             }
+
+
+            val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                .withZone( ZoneId.systemDefault() )
+
+            val date = Instant.parse(event.datetime).epochSecond
+                .also { println("$it") }
+            val now = Instant.now().epochSecond
+                .also { println("$it   diff is ${date - it}") }
+            val diff = (date-now)
+                .also { println("$it") }
+            val hours = (diff / 3600L)
+                .also { println("$it") }
+            val days = (hours / 24L)
+                .also { println("$it") }
+            datetime.text = formatter.format(Instant.parse(event.datetime))
+            datetimeToGo.text = "$days   days"
 
             //menu.visibility = if (event.) View.VISIBLE else View.INVISIBLE
 

@@ -20,6 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.UserJobsAdapter
+import ru.netology.nmedia.databinding.FragmentNewEventBinding
 import ru.netology.nmedia.databinding.FragmentUserProfileBinding
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.viewmodel.UserProfileViewModel
@@ -33,6 +34,8 @@ import java.time.format.FormatStyle
 @AndroidEntryPoint
 class UserProfileFragment: Fragment() {
 
+    private var fragmentBinding: FragmentNewEventBinding? = null
+
     private val viewModel: UserProfileViewModel by viewModels(
         ownerProducer = ::requireParentFragment
     )
@@ -44,7 +47,7 @@ class UserProfileFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = FragmentUserProfileBinding.inflate(
+        var binding = FragmentUserProfileBinding.inflate(
             inflater,
             container,
             false
@@ -68,12 +71,7 @@ class UserProfileFragment: Fragment() {
 
 
         fun clearAll(){
-            binding.companyName.text.clear()
-            binding.position.text.clear()
-            binding.startDate.text.clear()
-            binding.finishDate.text.clear()
-            binding.jobEditCard.visibility = View.GONE
-            binding.fab.visibility = View.VISIBLE
+
             AndroidUtils.hideKeyboard(requireView())
         }
         binding.calendar.visibility = View.GONE
@@ -144,5 +142,9 @@ class UserProfileFragment: Fragment() {
         return binding.root
     }
 
+    override fun onDestroyView() {
+        fragmentBinding = null
+        super.onDestroyView()
+    }
 
 }

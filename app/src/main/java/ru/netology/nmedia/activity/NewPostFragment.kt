@@ -2,12 +2,14 @@ package ru.netology.nmedia.activity
 
 import android.app.Activity
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -37,6 +39,7 @@ class NewPostFragment: Fragment() {
 
     private var fragmentBinding: FragmentNewPostBinding? = null
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -74,6 +77,7 @@ class NewPostFragment: Fragment() {
         binding.okButton.setOnClickListener {
             viewModel.changeContent(binding.content.text.toString())
             viewModel.save()
+            println("Fragment ok button is clicked")
             AndroidUtils.hideKeyboard(requireView())
             findNavController().navigateUp()
         }
@@ -102,9 +106,7 @@ class NewPostFragment: Fragment() {
                     }
                     Activity.RESULT_OK -> {
                         val uri: Uri? = it.data?.data
-                        println("URI IS $uri")
                         viewModel.changePhoto(uri, uri?.toFile())
-
                     }
                 }
             }
@@ -112,12 +114,13 @@ class NewPostFragment: Fragment() {
         binding.pickPhoto.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
-                .compress(2048)
+                .compress(1024)
                 .provider(ImageProvider.GALLERY)
                 .galleryMimeTypes(
                     arrayOf(
                         "image/png",
                         "image/jpeg",
+                        "image/jpg"
                     )
                 )
                 .createIntent(pickPhotoLauncher::launch)
@@ -126,7 +129,7 @@ class NewPostFragment: Fragment() {
         binding.takePhoto.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
-                .compress(2048)
+                .compress(1024)
                 .provider(ImageProvider.CAMERA)
                 .createIntent(pickPhotoLauncher::launch)
         }

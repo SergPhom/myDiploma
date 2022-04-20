@@ -39,4 +39,11 @@
     <string name="start_date">Start date:</string>
     <string name="finish_date">Finish date</string>
     <string name="job_warning">Please, fill in all  required fields </string>
+    <string name="when">When:</string>
+    <string name="where">Where:</string>
+    <string name="online">ONLINE</string>
+    <string name="offline">OFFLINE</string>
+    <string name="link_https">Link(Https://..)</string>
+    <string name="set_time">Set time</string>
+    <string name="days">days</string>
 </resources>

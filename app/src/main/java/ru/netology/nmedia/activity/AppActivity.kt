@@ -114,6 +114,8 @@ class AppActivity: AppCompatActivity() {
                 || nd.id == R.id.signUpFragment
                 || nd.id == R.id.userProfileFragment
                 || nd.id == R.id.singlePostFragment
+                || nd.id == R.id.newEventFragment
+                || nd.id == R.id.newPostFragment
             ){
                 view.visibility = View.GONE
             }else{

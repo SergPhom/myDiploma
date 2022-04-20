@@ -12,7 +12,7 @@ data class Event(
     val authorAvatar: String?,
     val content: String,
     val datetime: String = "",
-    val published: String = "null",
+    var published: String = "null",
     val coords: Coordinates? = null,
     val type: String?,
     val likeOwnerIds: List<Long> = emptyList(),

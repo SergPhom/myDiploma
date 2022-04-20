@@ -1,4 +1,4 @@
-package ru.netology.nmedia.repository
+package ru.netology.nmedia.repository.post
 
 
 import androidx.paging.PagingData
@@ -10,6 +10,10 @@ import ru.netology.nmedia.dto.Post
 interface PostRepository {
 
     val data: Flow<PagingData<Post>>
+//                 **************              CREATE
+
+    suspend fun savePost(post: Post)
+    suspend fun savePostWithAttachment(post: Post, upload: MediaUpload)
 
 //                 **************              READ
     suspend fun getAll()
@@ -22,13 +26,8 @@ interface PostRepository {
 
     suspend fun dislikeById(id: Long)
 
-    suspend fun savePost(post: Post)
-    suspend fun savePostWithAttachment(post: Post, upload: MediaUpload)
-
-    suspend fun sharePost(id: Long)
-
 //    suspend fun newerPostsViewed()
-//            ***************               REMOVE
+//            ***************               DELETE
 
     suspend fun removeById(id: Long)
 

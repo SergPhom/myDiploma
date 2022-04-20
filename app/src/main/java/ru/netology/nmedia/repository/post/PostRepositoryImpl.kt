@@ -1,4 +1,4 @@
-package ru.netology.nmedia.repository
+package ru.netology.nmedia.repository.post
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -27,6 +27,7 @@ class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
     private val keyDao: PostRemoteKeyDao,
     private val postsApiService: PostsApiService,
+    private val mediaApiService: MediaApiService,
     pager: Pager<Int, PostEntity>
 ): PostRepository {
 
@@ -48,7 +49,6 @@ class PostRepositoryImpl @Inject constructor(
             }
 
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-            println("PostRepository body is $body")
             dao.insert(body.toEntity())
         } catch (e: IOException) {
             throw NetworkError
@@ -96,7 +96,8 @@ class PostRepositoryImpl @Inject constructor(
         try {
             val media = upload(uploadItem)
             // TODO: add support for other types
-            val postWithAttachment = post.copy(attachment = Attachment(media.id, "MyPhoto",AttachmentType.IMAGE))
+            val postWithAttachment = post.copy(attachment = Attachment(media.url,
+                "MyPhoto",AttachmentType.IMAGE))
             savePost(postWithAttachment)
         } catch (e: AppError) {
             throw e
@@ -158,29 +159,13 @@ class PostRepositoryImpl @Inject constructor(
     }
 
     //                                                                             *******SHARE*****
-    override suspend fun sharePost(id: Long) {
-        try {
-            val response = postsApiService.shareById(id)
-            if (!response.isSuccessful) {
-                throw ApiError(response.code(), response.message())
-            }
-
-            val body = response.body() ?: throw ApiError(response.code(), response.message())
-            dao.insert(PostEntity.fromDto(body))
-//            dao.onShareButtonClick(id)
-        } catch (e: IOException) {
-            throw NetworkError
-        } catch (e: Exception) {
-            throw UnknownError
-        }
-    }
 
     override suspend fun upload(upload: MediaUpload): Media {
         try {
             val media = MultipartBody.Part.createFormData(
                 "file", upload.file.name, upload.file.asRequestBody())
 
-            val response = postsApiService.upload(media)
+            val response = mediaApiService.upload(media)
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }

@@ -24,16 +24,15 @@ import ru.netology.nmedia.dto.FeedItem
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.view.load
-import ru.netology.nmedia.view.loadCircleCrop
+import ru.netology.nmedia.view.loadAvatar
+import ru.netology.nmedia.view.loadImage
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 interface Callback {
     fun onLiked(post: Post){}
-    fun onShared(post: Post){}
     fun onRemove(post: Post){}
     fun onEdit(post: Post){}
     fun onPlay(post: Post){}
@@ -41,6 +40,7 @@ interface Callback {
     fun onSingleViewImageOnly(post: Post){}
     fun onSavingRetry(post: Post){}
     fun onUserProfile(author: String, authorId: Long){}
+    fun onUserWall(author: String, authorId: Long){}
 }
 
 class PostsAdapter(
@@ -226,7 +226,7 @@ class PostViewHolder(
     @RequiresApi(Build.VERSION_CODES.O)
     fun bind(post: Post) {
         binding.apply {
-            avatar.loadCircleCrop("${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}")
+            post.authorAvatar?.let { avatar.loadAvatar(it) }
             author.text = "${post.author}  ${post.id}"
             published.text = formatter.format(Instant.parse(post.published))
             content.text = post.content
@@ -275,7 +275,7 @@ class PostViewHolder(
             videoPlay.setOnClickListener {
                 callback.onPlay(post)
             }
-            author.setOnClickListener{ callback.onUserProfile(post.author, post.authorId)}
+            author.setOnClickListener{ callback.onUserWall(post.author, post.authorId)}
             avatar.setOnClickListener{ callback.onSingleView(post)}
             content.setOnClickListener{ callback.onSingleView(post)}
             published.setOnClickListener{ callback.onSingleView(post)}
@@ -291,7 +291,7 @@ class PostViewHolder(
                     AttachmentType.VIDEO -> videoGroup.visibility = View.VISIBLE
                     AttachmentType.IMAGE ->{
                         imageAttachment.visibility = View.VISIBLE
-                        imageAttachment.load("${BuildConfig.BASE_URL}/media/${post.attachment.url}")
+                        imageAttachment.loadImage(post.attachment.url)
                     }
                 }
             }else{

@@ -52,7 +52,7 @@ android {
         }
         debug {
             manifestPlaceholders.usesCleartextTraffic = true
-            buildConfigField "String", "BASE_URL", '"https://my-netology-diploma.herokuapp.com"'
+            buildConfigField "String", "BASE_URL", '"https://nework-diploma.herokuapp.com"'
             //buildConfigField "String", "BASE_URL", '"http://10.0.2.2:9999"'
         }
     }

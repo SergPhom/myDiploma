@@ -1,13 +1,11 @@
-package ru.netology.nmedia.repository
+package ru.netology.nmedia.repository.event
 
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
-import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -19,7 +17,6 @@ import ru.netology.nmedia.dto.Event
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.MediaUpload
 import ru.netology.nmedia.entity.PostEntity
-import ru.netology.nmedia.entity.toEntity
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
@@ -67,7 +64,19 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveEvent(event: Event) {
-        TODO("Not yet implemented")
+        try {
+            val response = eventApiService.saveEvent(event)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            eventDao.insert(EventEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (t: Throwable) {
+            println("event repo error is ${t.stackTrace}")
+        }
     }
 
     override suspend fun saveEventWithAttachment(event: Event, upload: MediaUpload) {

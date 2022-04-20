@@ -14,13 +14,6 @@
         tools:layout_editor_absoluteX="-150dp"
         tools:layout_editor_absoluteY="0dp" />
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/map"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/map"
-        app:layout_constraintTop_toTopOf="@+id/map"
-        app:srcCompat="@drawable/ic_cancel_24"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

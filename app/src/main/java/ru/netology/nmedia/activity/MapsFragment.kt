@@ -34,6 +34,7 @@ class MapsFragment: Fragment() {
                 googleMap.apply {
                     isMyLocationEnabled = true
                     uiSettings.isMyLocationButtonEnabled = true
+                    uiSettings.setAllGesturesEnabled(true)
                 }
             } else {
                 // TODO: show sorry dialog
@@ -45,18 +46,13 @@ class MapsFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-//        val binding = FragmentMapBinding.inflate(
-//            inflater,
-//            container,
-//            false
-//        )
+
 
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 
@@ -111,16 +107,7 @@ class MapsFragment: Fragment() {
                             .title("MyMarker")
                             .draggable(true)
                             .icon(BitmapDescriptorFactory.fromAsset("sber.bmp"))
-                    )
-//                    addMarker {
-//
-//                        position(target)
-//                        icon(
-//                            getDrawable(requireContext(), R.drawable.ic_netology_48dp)!!)
-//
-//                        title("The Moscow Kremlin")
-//                    }
-                        .apply {
+                    ).apply {
                     tag = "Any additional data" // Any
                 }
             }
@@ -134,6 +121,15 @@ class MapsFragment: Fragment() {
                 true
             }
 
+            googleMap.setOnMapLongClickListener {
+            println("map info is $it")
+            markerManager.Collection().addMarker(
+                MarkerOptions()
+                    .position(it)
+                    .title("I pick it")
+                    .draggable(false)
+            )
+            }
 
             googleMap.awaitAnimateCamera(
                 CameraUpdateFactory.newCameraPosition(

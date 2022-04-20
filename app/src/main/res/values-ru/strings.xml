@@ -38,4 +38,11 @@
     <string name="start_date">Дата начала:</string>
     <string name="finish_date">Дата окончания:</string>
     <string name="job_warning">Пожалуйста,заполните обязательные поля</string>
+    <string name="when">Когда: </string>
+    <string name="where">Где: </string>
+    <string name="online">Онлайн</string>
+    <string name="offline">Оффлайн</string>
+    <string name="link_https">Ссылка(Https://..)</string>
+    <string name="set_time">Установить</string>
+    <string name="days"> дней. </string>
 </resources>

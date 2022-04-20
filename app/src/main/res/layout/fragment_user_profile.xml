@@ -70,7 +70,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:orientation="vertical"
         android:background="@color/purple_500"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <EditText
             android:id="@+id/companyName"

@@ -55,4 +55,14 @@ object DbModule {
     fun provideJobRemoteKeyDao(
         appDb: AppDb
     ): JobRemoteKeyDao = appDb.jobRemoteKeyDao()
+
+    @Provides
+    fun provideUserWallDao(
+        appDb: AppDb
+    ): UserWallDao = appDb.userWallDao()
+
+    @Provides
+    fun provideUserWallRemoteKeyDao(
+        appDb: AppDb
+    ): UserWallRemoteKeyDao = appDb.userWallRemoteKeyDao()
 }

@@ -69,6 +69,7 @@ class SignUpFragment: Fragment() {
             ImagePicker.with(this)
                 .crop()
                 .compress(2048)
+                .maxResultSize(100,100)
                 .provider(ImageProvider.GALLERY)
                 .galleryMimeTypes(
                     arrayOf(

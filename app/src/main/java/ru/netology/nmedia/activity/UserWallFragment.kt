@@ -1,0 +1,41 @@
+package ru.netology.nmedia.activity
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import ru.netology.nmedia.adapter.Callback
+import ru.netology.nmedia.adapter.UserWallAdapter
+import ru.netology.nmedia.databinding.FragmentUserWallBinding
+import ru.netology.nmedia.viewmodel.UserWallViewModel
+
+@AndroidEntryPoint
+class UserWallFragment: Fragment() {
+
+    private val viewModel: UserWallViewModel by viewModels(ownerProducer = ::requireParentFragment)
+
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        val binding = FragmentUserWallBinding.inflate(
+            inflater, container, false
+        )
+
+        val adapter = UserWallAdapter(object: Callback {
+
+        })
+        binding.list.adapter = adapter
+        lifecycleScope.launchWhenCreated {
+            viewModel.data.collectLatest(adapter::submitData)
+        }
+        return binding.root
+    }
+}

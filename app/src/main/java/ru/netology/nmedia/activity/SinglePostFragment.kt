@@ -1,28 +1,17 @@
 package ru.netology.nmedia.activity
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.ActionBarContainer
-import androidx.appcompat.widget.PopupMenu
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentSinglePostBinding
-import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.enumeration.AttachmentType
-import ru.netology.nmedia.view.load
-import ru.netology.nmedia.view.loadCircleCrop
 import ru.netology.nmedia.viewmodel.PostViewModel
-import ru.netology.nmedia.BuildConfig
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class SinglePostFragment: Fragment() {

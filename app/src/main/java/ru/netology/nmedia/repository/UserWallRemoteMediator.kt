@@ -1,26 +1,30 @@
 package ru.netology.nmedia.repository
 
-import androidx.paging.*
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadType
+import androidx.paging.PagingState
+import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import retrofit2.Response
-import ru.netology.nmedia.api.PostsApiService
-import ru.netology.nmedia.dao.PostDao
-import ru.netology.nmedia.dao.PostRemoteKeyDao
+import ru.netology.nmedia.api.WallApiService
+import ru.netology.nmedia.dao.UserWallDao
+import ru.netology.nmedia.dao.UserWallRemoteKeyDao
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.entity.PostEntity
-import ru.netology.nmedia.entity.PostRemoteKeyEntity
+import ru.netology.nmedia.entity.UserWallEntity
+import ru.netology.nmedia.entity.UserWallRemoteKeyEntity
 import ru.netology.nmedia.error.ApiError
-import java.lang.Exception
 import javax.inject.Inject
 
+
 @OptIn(ExperimentalPagingApi::class)
-class PostRemoteMediator @Inject constructor(
-    private val apiService: PostsApiService,
-    private val dao: PostDao,
-    private val postRemoteKeyDao: PostRemoteKeyDao,
-    private val db: AppDb
-): RemoteMediator<Int, PostEntity>() {
+class UserWallRemoteMediator @Inject constructor(
+    private val apiService: WallApiService,
+    private val dao: UserWallDao,
+    private val userWallRemoteKeyDao: UserWallRemoteKeyDao,
+    private val db: AppDb,
+    userId: Long
+): RemoteMediator<Int, UserWallEntity>() {
 
     override suspend fun initialize(): InitializeAction =
         if(dao.isEmpty()){
@@ -40,24 +44,23 @@ class PostRemoteMediator @Inject constructor(
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, PostEntity>
+        state: PagingState<Int, UserWallEntity>
     ): MediatorResult {
-        try{
+        try {
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    println("refresh working")
-                    if (postRemoteKeyDao.isEmpty()) {
-                        apiService.getLatest(state.config.pageSize)
+                    if (userWallRemoteKeyDao.isEmpty()) {
+                        apiService.getLatest( 0L, state.config.pageSize)
                     } else{
-                        val id = postRemoteKeyDao.max() ?:
-                            return  MediatorResult.Success(false)
+                        val id = userWallRemoteKeyDao.max() ?:
+                        return  MediatorResult.Success(false)
                         apiService.getAfter(id, state.config.pageSize)
                     }
                 }
                 LoadType.APPEND -> {
                     println("append working")
-                    val id = postRemoteKeyDao.min() ?:
-                        return MediatorResult.Success(false)
+                    val id = userWallRemoteKeyDao.min() ?:
+                    return MediatorResult.Success(false)
                     apiService.getBefore(
                         id, state.config.pageSize)
                 }
@@ -70,35 +73,36 @@ class PostRemoteMediator @Inject constructor(
             db.withTransaction {
                 when(loadType){
                     LoadType.REFRESH->{
-                        val before = if(postRemoteKeyDao.min() != null){
-                            postRemoteKeyDao.min()!!
+                        val before = if(userWallRemoteKeyDao.min() != null){
+                            userWallRemoteKeyDao.min()!!
                         } else posts.last().id
-                        postRemoteKeyDao.insert(
+                        userWallRemoteKeyDao.insert(
                             listOf(
-                                PostRemoteKeyEntity(
-                                    type = PostRemoteKeyEntity.KeyType.AFTER,
+                                UserWallRemoteKeyEntity(
+                                    type = UserWallRemoteKeyEntity.KeyType.AFTER,
                                     id = posts.first().id),
-                                PostRemoteKeyEntity(
-                                    type = PostRemoteKeyEntity.KeyType.BEFORE,
+                                UserWallRemoteKeyEntity(
+                                    type = UserWallRemoteKeyEntity.KeyType.BEFORE,
                                     id = before
                                 )
                             )
                         )
                     }
                     LoadType.APPEND->{
-                        postRemoteKeyDao.insert(
-                            PostRemoteKeyEntity(
-                                type = PostRemoteKeyEntity.KeyType.BEFORE,
+                        userWallRemoteKeyDao.insert(
+                            UserWallRemoteKeyEntity(
+                                type = UserWallRemoteKeyEntity.KeyType.BEFORE,
                                 id = posts.last().id)
                         )
                     }
                 }
-                dao.insert(posts.map(PostEntity::fromDto))
+                dao.insert(posts.map(UserWallEntity::fromDto))
             }
             return MediatorResult.Success(posts.isEmpty())
-        }catch (e: Exception){
-            return MediatorResult.Error(e)
+
+        } catch (t: Throwable) {
+            println("WallRemoteMedi error is $t")
+            return MediatorResult.Error(t)
         }
     }
 }
-

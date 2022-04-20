@@ -12,10 +12,13 @@ import ru.netology.nework.entity.JobEntity
 import ru.netology.nmedia.dao.EventDao
 import ru.netology.nmedia.dao.JobDao
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.dao.UserWallDao
 import ru.netology.nmedia.entity.PostEntity
-import ru.netology.nmedia.repository.EventRemoteMediator
+import ru.netology.nmedia.entity.UserWallEntity
+import ru.netology.nmedia.repository.event.EventRemoteMediator
 import ru.netology.nmedia.repository.JobRemoteMediator
-import ru.netology.nmedia.repository.PostRemoteMediator
+import ru.netology.nmedia.repository.post.PostRemoteMediator
+import ru.netology.nmedia.repository.UserWallRemoteMediator
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -49,6 +52,17 @@ object PagerModule{
     ): Pager<Int, JobEntity> = Pager(
         config = PagingConfig(pageSize = 30, enablePlaceholders = false),
         remoteMediator = jobRemoteMediator,
-        pagingSourceFactory = {dao.getAll()}
+        pagingSourceFactory = { dao.getAll() }
     )
+
+//    @ExperimentalPagingApi
+//    @Provides
+//    @Singleton
+//    fun provideUserWallPager(
+//        dao: UserWallDao, userWallRemoteMediator: UserWallRemoteMediator
+//    ): Pager<Int, UserWallEntity> = Pager(
+//        config = PagingConfig( pageSize = 30, enablePlaceholders = false),
+//        remoteMediator = userWallRemoteMediator,
+//        pagingSourceFactory = { dao.getAll() }
+//    )
 }

@@ -1,6 +1,8 @@
 package ru.netology.nmedia.viewmodel
 
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import androidx.paging.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,14 +14,13 @@ import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.model.PhotoModel
-import ru.netology.nmedia.repository.PostRepository
+import ru.netology.nmedia.repository.post.PostRepository
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
 import java.lang.Exception
 import java.time.Instant
 import java.util.*
 import javax.inject.Inject
-import kotlin.random.Random
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -130,17 +131,6 @@ class PostViewModel @Inject constructor(
         edited.postValue(empty.copy(authorId = appAuth.authStateFlow.value.id))
     }
 
-    fun loadPosts() = viewModelScope.launch {
-        try {
-            println("Load posts work")
-            _dataState.value = FeedModelState(loading = true)
-            repository.getAll()
-            _dataState.value = FeedModelState()
-        } catch (e: Exception) {
-            _dataState.value = FeedModelState( msg = "Loading error")
-        }
-    }
-
 //    fun markNewerPostsViewed()= viewModelScope.launch {
 //        try {
 //            repository.newerPostsViewed()
@@ -150,6 +140,7 @@ class PostViewModel @Inject constructor(
 //        }
 //    }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun save() {
         edited.value?.let {
             _postCreated.postValue(Unit)
@@ -215,18 +206,6 @@ class PostViewModel @Inject constructor(
             _dataState.value = FeedModelState( msg = "Remove error ")
         }
     }
-
-}
-
-    fun onShared(post: Post) {
-        viewModelScope.launch {
-            try {
-                repository.sharePost(post.id)
-                _dataState.value = FeedModelState()
-            } catch (e: Exception) {
-                _dataState.value = FeedModelState( msg = "Share error ")
-            }
-        }
     }
 
     fun changePhoto(uri: Uri?, file: File?) {
