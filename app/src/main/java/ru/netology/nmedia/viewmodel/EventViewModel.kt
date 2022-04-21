@@ -4,18 +4,24 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nework.enumeration.EventType
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Coordinates
 import ru.netology.nmedia.dto.Event
 import ru.netology.nmedia.repository.event.EventRepository
+import java.lang.Exception
 import java.time.Instant
 import java.time.OffsetDateTime
 import javax.inject.Inject
@@ -45,7 +51,29 @@ class EventViewModel @Inject constructor(
     val type = MutableLiveData(EventType.NONE)
     private val cashed = repository.data
         .cachedIn(viewModelScope)
-    val data: Flow<PagingData<Event>> = cashed
+    val data: Flow<PagingData<Event>> = appAuth
+        .authStateFlow
+        .flatMapLatest { (myId,_) ->
+            cashed.map { event ->
+                event.map {
+                    it.copy(ownedByMe = it.authorId == myId,
+                        likedByMe = it.likeOwnerIds.contains(myId))
+                }
+            }
+        }
+
+    val authenticated = appAuth
+        .authStateFlow.map {
+            it.id != 0L
+        }
+        .asLiveData(Dispatchers.Default)
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun clearEvent(){
+        datetime.value = OffsetDateTime.MIN
+        type.value = EventType.NONE
+        edited.value = empty
+    }
 
     fun changeEvent(content: String,
                     link: String?,
@@ -85,5 +113,15 @@ class EventViewModel @Inject constructor(
         }
         edited.value = empty
         //_photo.value = noPhoto
+    }
+
+    fun removeEvent(event: Event) {
+        viewModelScope.launch {
+            try {
+                repository.removeById(event.id)
+            } catch (e: Exception) {
+                println("removeEvent error is $e")
+            }
+        }
     }
 }

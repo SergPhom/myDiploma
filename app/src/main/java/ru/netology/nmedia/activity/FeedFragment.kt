@@ -96,9 +96,8 @@ class FeedFragment: Fragment(){
             }
 
             override fun onUserWall(author: String, authorId: Long) {
-                userWallViewModel.userId.value = authorId
                 findNavController().navigate(R.id.action_feedFragment_to_userWallFragment,
-                bundleOf("userId" to authorId)  )
+                bundleOf("USER_ID" to authorId)  )
 
             }
         })
@@ -152,13 +151,12 @@ class FeedFragment: Fragment(){
 //        }
 
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_mapsFragment)
-//            if(viewModel.authenticated.value == true){
-//                viewModel.forAuthenticated()
-//                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
-//            } else{
-//                binding.signInDialog.visibility = View.VISIBLE
-//            }
+            if(viewModel.authenticated.value == true){
+                viewModel.forAuthenticated()
+                findNavController().navigate(R.id.action_feedFragment_to_newPostFragment)
+            } else{
+                binding.signInDialog.visibility = View.VISIBLE
+            }
         }
         binding.signInDialogOk.setOnClickListener {
             findNavController().navigate(

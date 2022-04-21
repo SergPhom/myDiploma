@@ -53,6 +53,7 @@
                 tools:ignore="VectorDrawableCompat" />
         </LinearLayout>
 
+        //when and where
         <LinearLayout
             android:id="@+id/date_coords"
             android:layout_width="wrap_content"
@@ -128,8 +129,6 @@
                 android:visibility="gone"/>
 
         </LinearLayout>
-
-
 
         //content
         <EditText
@@ -212,6 +211,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        // dialog
         <LinearLayout
             android:id="@+id/sign_out_dialog"
             android:layout_width="wrap_content"
@@ -244,8 +244,9 @@
                 android:textColor="@color/cancel_red"
                 android:background="@color/transparent"
                 android:text="@string/sign_out"/>
-        </LinearLayout>    // dialog
+        </LinearLayout>
 
+        //attachement group
         <LinearLayout
             android:id="@+id/buttonPanel"
             android:layout_width="0dp"
@@ -270,6 +271,6 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/offset"
                 app:icon="@drawable/ic_camera_24dp" />
-        </LinearLayout>            //attachement group
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

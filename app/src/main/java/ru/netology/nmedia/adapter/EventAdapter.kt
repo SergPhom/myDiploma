@@ -5,6 +5,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.annotation.RequiresApi
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -115,27 +116,26 @@ class EventViewHolder(
             datetime.text = formatter.format(Instant.parse(event.datetime))
             datetimeToGo.text = "$days   days"
 
-            //menu.visibility = if (event.) View.VISIBLE else View.INVISIBLE
-
-//            menu.setOnClickListener {
-//                PopupMenu(it.context, it).apply{
-//                    inflate()
-//                    menu.setGroupVisible(R.id.owned, post.ownedByMe)
-//                    setOnMenuItemClickListener { item ->
-//                        when(item.itemId){
-//                            R.id.remove -> {
-//                                callback.onRemove(post)
-//                                true
-//                            }
-//                            R.id.edit -> {
-//                                callback.onEdit(post)
-//                                true
-//                            }
-//                            else -> false
-//                        }
-//                    }
-//                }.show()
-//            }
+            menu.visibility = if (event.ownedByMe) View.VISIBLE else View.INVISIBLE
+            menu.setOnClickListener {
+                PopupMenu(it.context, it).apply{
+                    inflate(R.menu.menu_post)
+                    menu.setGroupVisible(R.id.owned, event.ownedByMe)
+                    setOnMenuItemClickListener { item ->
+                        when(item.itemId){
+                            R.id.remove -> {
+                                callback.onRemove(event)
+                                true
+                            }
+                            R.id.edit -> {
+                                callback.onEdit(event)
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                }.show()
+            }
 
             retrySaving.setOnClickListener {
                 callback.onSavingRetry(event)
@@ -173,6 +173,4 @@ class EventViewHolder(
             }
         }
     }
-
-
 }

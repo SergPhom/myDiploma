@@ -26,6 +26,7 @@ class UserWallRemoteMediator @Inject constructor(
     userId: Long
 ): RemoteMediator<Int, UserWallEntity>() {
 
+    val userID = userId
     override suspend fun initialize(): InitializeAction =
         if(dao.isEmpty()){
             InitializeAction.LAUNCH_INITIAL_REFRESH
@@ -50,7 +51,7 @@ class UserWallRemoteMediator @Inject constructor(
             val response = when (loadType) {
                 LoadType.REFRESH -> {
                     if (userWallRemoteKeyDao.isEmpty()) {
-                        apiService.getLatest( 0L, state.config.pageSize)
+                        apiService.getLatest( userID, state.config.pageSize)
                     } else{
                         val id = userWallRemoteKeyDao.max() ?:
                         return  MediatorResult.Success(false)

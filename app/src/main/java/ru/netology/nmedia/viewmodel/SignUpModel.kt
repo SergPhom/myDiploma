@@ -34,11 +34,18 @@ class SignUpModel @Inject constructor(
         _photo.value = PhotoModel(uri, file)
         println(" photo is ${_photo.value}")
     }
-    fun registrate(login: String, password: String, name: String, file: MultipartBody.Part? = null) {
+    fun registrate(login: String,
+                   password: String,
+                   name: String,
+                   file: MultipartBody.Part? = null
+    ) {
         viewModelScope.launch {
             try {
-                val response = usersApiService
-                    .registrationWithAvatar(login, password, name, file)
+                val response = if(file != null){
+                    usersApiService
+                        .registrationWithAvatar(login, password, name, file)
+                } else usersApiService.registration(login,password, name)
+
                 if (!response.isSuccessful) {
 
                     throw ApiError(response.code(), response.message())
@@ -52,9 +59,8 @@ class SignUpModel @Inject constructor(
                 println("registration error is $t")
                 //throw UnknownError
             } catch (e: Throwable) {
-                println ("AVM e 2 $e")                                                       ////
+                println ("AVM e 2 $e")
             }
         }
     }
-
 }

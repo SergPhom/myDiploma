@@ -22,6 +22,7 @@ data class Event(
     val participatedByMe: Boolean = false,
     val attachment: Attachment? = null,
     val link: String? = null,
+    val ownedByMe: Boolean = false,
 ) : Parcelable
 
 

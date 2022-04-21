@@ -13,4 +13,6 @@ interface UserWallRepository {
 
     suspend fun getAll(id: Long)
 
+    suspend fun clearData()
+
 }

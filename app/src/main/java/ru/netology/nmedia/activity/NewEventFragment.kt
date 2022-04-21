@@ -125,6 +125,13 @@ class NewEventFragment: Fragment() {
         binding.place.setOnClickListener {
             findNavController().navigate(R.id.action_newEventFragment_to_mapsFragment)
         }
+
+        binding.cancelButton.setOnClickListener {
+            fragmentBinding = null
+            viewModel.clearEvent()
+            findNavController().navigateUp()
+        }
+
         return binding.root
     }
 

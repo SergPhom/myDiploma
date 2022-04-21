@@ -57,13 +57,12 @@ class MapsFragment: Fragment() {
     ): View {
 
         binding = FragmentMapBinding.inflate(inflater, container, false)
-        println("this step done")
+
         return binding.root
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        println("here is not go")
         super.onViewCreated(view, savedInstanceState)
 
 
@@ -94,7 +93,6 @@ class MapsFragment: Fragment() {
                         .getFusedLocationProviderClient(requireActivity())
 
                     fusedLocationProviderClient.lastLocation.addOnSuccessListener {
-                        println(" current location is $it")
                     }
                 }
                 // 2. Должны показать обоснование необходимости прав

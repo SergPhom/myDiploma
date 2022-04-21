@@ -29,7 +29,6 @@ class UserWallRepositoryImpl @Inject constructor(
     private val dao: UserWallDao,
     private val keyDao: UserWallRemoteKeyDao,
     private val userWallApiService: WallApiService,
-    //val pager: Pager<Int, UserWallEntity>,
     val apiService: WallApiService,
     val db: AppDb
 ): UserWallRepository {
@@ -51,13 +50,8 @@ class UserWallRepositoryImpl @Inject constructor(
     )
         .flow
         .map { it.map(UserWallEntity::toDto) }
-
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    override val data = pager
-//        .flow
-//        .map { it.map(UserWallEntity::toDto) }
-//        .catch { println("UserWall error in repository data is - $it") }
-//        .flowOn(Dispatchers.Default)
+        .catch { println("UserWall error in repository data is - $it") }
+        .flowOn(Dispatchers.Default)
 
     override suspend fun getAll(id: Long) {
         try{
@@ -74,4 +68,8 @@ class UserWallRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun clearData(){
+        dao.removeAll()
+        keyDao.removeAll()
+    }
 }

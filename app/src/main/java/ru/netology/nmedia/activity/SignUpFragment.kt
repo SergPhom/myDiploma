@@ -84,7 +84,6 @@ class SignUpFragment: Fragment() {
         binding.enterButton.setOnClickListener {
 
             val upload = viewModel.photo.value?.file
-            println("Upload is $upload")
             viewModel.registrate(binding.login.text.toString(),
                 binding.password.text.toString(),
                 binding.name.text.toString(),

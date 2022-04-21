@@ -116,6 +116,8 @@ class AppActivity: AppCompatActivity() {
                 || nd.id == R.id.singlePostFragment
                 || nd.id == R.id.newEventFragment
                 || nd.id == R.id.newPostFragment
+                || nd.id == R.id.mapsFragment
+                || nd.id == R.id.userWallFragment
             ){
                 view.visibility = View.GONE
             }else{
@@ -124,7 +126,7 @@ class AppActivity: AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfigurations)
 
         val listener = NavigationBarView.OnItemSelectedListener {
-             when(it.itemId){
+            when(it.itemId){
                 R.id.feed_Fragment -> {
                     navController.navigate(
                         R.id.action_eventFragment_to_feedFragment
@@ -165,15 +167,19 @@ class AppActivity: AppCompatActivity() {
 
         return when (item.itemId) {
             R.id.signin -> {
-                navController.navigate(
-                    R.id.action_feedFragment_to_authFragment,
-                )
+                if (navController?.currentDestination?.id == R.id.feedFragment) {
+                    navController.navigate(R.id.action_feedFragment_to_authFragment)
+                } else {
+                    navController.navigate(R.id.action_eventFragment_to_authFragment)
+                }
                 true
             }
             R.id.signup -> {
-                navController.navigate(
-                    R.id.action_feedFragment_to_signUpFragment
-                )
+                if (navController?.currentDestination?.id == R.id.feedFragment) {
+                    navController.navigate(R.id.action_feedFragment_to_signUpFragment)
+                } else {
+                    navController.navigate(R.id.action_eventFragment_to_signUpFragment)
+                }
                 true
             }
             R.id.signout -> {
