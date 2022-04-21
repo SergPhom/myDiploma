@@ -124,7 +124,11 @@
         android:id="@+id/userWallFragment"
         android:name="ru.netology.nmedia.activity.UserWallFragment"
         android:label="fragment_user_wall"
-        tools:layout="@layout/fragment_user_wall" />
+        tools:layout="@layout/fragment_user_wall" >
+        <action
+            android:id="@+id/action_userWallFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+    </fragment>
     <fragment
         android:id="@+id/newEventFragment"
         android:name="ru.netology.nmedia.activity.NewEventFragment"
