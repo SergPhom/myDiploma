@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".activity.UserWallFragment">
 
+    //avatar
     <ImageView
         android:layout_marginTop="@dimen/offset"
         android:layout_marginStart="@dimen/offset"
@@ -18,6 +19,7 @@
         tools:ignore="ContentDescription"
         tools:srcCompat="@sample/posts_avatars" />
 
+    //name
     <TextView
         android:id="@+id/author"
         android:layout_width="0dp"
@@ -33,6 +35,7 @@
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="@sample/posts.json/data/author" />
 
+    //userJobs
     <com.google.android.material.button.MaterialButton
         android:id="@+id/userJobs"
         android:layout_width="wrap_content"
@@ -48,6 +51,19 @@
         android:textColor="#000000"
         app:backgroundTint="@color/calendar_tint"/>
 
+    //divider
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/offset"
+        android:layout_marginEnd="@dimen/offset"
+        android:background="@color/divider_color"
+        app:layout_constraintTop_toBottomOf="@id/userJobs"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    //list
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresh"
         android:layout_width="match_parent"
@@ -63,8 +79,5 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:listitem="@layout/card_post" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

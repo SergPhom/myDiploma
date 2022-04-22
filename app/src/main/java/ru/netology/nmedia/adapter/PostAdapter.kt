@@ -39,8 +39,7 @@ interface Callback {
     fun onSingleView(post: Post){}
     fun onSingleViewImageOnly(post: Post){}
     fun onSavingRetry(post: Post){}
-    fun onUserProfile(author: String, authorId: Long){}
-    fun onUserWall(author: String, authorId: Long){}
+    fun onUserWall(authorName: String,author: String, authorId: Long){}
 }
 
 class PostsAdapter(
@@ -275,8 +274,10 @@ class PostViewHolder(
             videoPlay.setOnClickListener {
                 callback.onPlay(post)
             }
-            author.setOnClickListener{ callback.onUserWall(post.author, post.authorId)}
-            avatar.setOnClickListener{ callback.onSingleView(post)}
+            author.setOnClickListener{ post.authorAvatar
+                ?.let { it1 -> callback.onUserWall(post.author,it1, post.authorId) } }
+            avatar.setOnClickListener{ post.authorAvatar
+                ?.let { it1 -> callback.onUserWall(post.author,it1, post.authorId) }}
             content.setOnClickListener{ callback.onSingleView(post)}
             published.setOnClickListener{ callback.onSingleView(post)}
             imageAttachment.setOnClickListener { callback.onSingleViewImageOnly(post) }

@@ -16,14 +16,16 @@ interface WallApiService {
         @Query("count") count: Int
     ): Response<List<Post>>
 
-    @GET("{id}/wall/before")
+    @GET("{userId}/wall/{id}/before")
     suspend fun getBefore(
+        @Path("userId") userId: Long,
         @Path("id") id: Long,
         @Query("count") count: Int
     ): Response<List<Post>>
 
-    @GET("{id}/wall/after")
+    @GET("{userId}/wall/{id}/after")
     suspend fun getAfter(
+        @Path("userId") userId: Long,
         @Path("id") id: Long,
         @Query("count") count: Int
     ): Response<List<Post>>

@@ -90,14 +90,9 @@ class FeedFragment: Fragment(){
                 viewModel.save()
             }
 
-            override fun onUserProfile(author: String, authorId: Long) {
-                findNavController().navigate(R.id.action_feedFragment_to_userProfileFragment,
-                    bundleOf("userName" to author, "userId" to authorId)  )
-            }
-
-            override fun onUserWall(author: String, authorId: Long) {
+            override fun onUserWall(authorName: String, authorAvatar: String, authorId: Long) {
                 findNavController().navigate(R.id.action_feedFragment_to_userWallFragment,
-                bundleOf("USER_ID" to authorId)  )
+                bundleOf("USER_NAME" to authorName,"USER_ID" to authorId, "USER_AVATAR" to authorAvatar)  )
 
             }
         })

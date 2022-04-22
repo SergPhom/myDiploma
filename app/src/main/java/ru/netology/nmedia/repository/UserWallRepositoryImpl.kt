@@ -69,7 +69,7 @@ class UserWallRepositoryImpl @Inject constructor(
     }
 
     override suspend fun clearData(){
-        dao.removeAll()
-        keyDao.removeAll()
+        dao.removeAll().also { println("dao is cleared ") }
+        keyDao.removeAll().also { println("key dao is cleared ") }
     }
 }

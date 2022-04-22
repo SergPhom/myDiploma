@@ -44,7 +44,6 @@ class PostRemoteMediator @Inject constructor(
         try{
             val response = when (loadType) {
                 LoadType.REFRESH -> {
-                    println("refresh working")
                     if (postRemoteKeyDao.isEmpty()) {
                         apiService.getLatest(state.config.pageSize)
                     } else{

@@ -1,6 +1,7 @@
 package ru.netology.nmedia.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nework.entity.toEntity
 import ru.netology.nmedia.api.UsersApiService
 import ru.netology.nmedia.dao.UserDao
@@ -34,5 +35,9 @@ class UserRepositoryImpl @Inject constructor(
             println("Repository Error is ${e}")
             throw UnknownError
         }
+    }
+
+    override suspend fun getUserById(userId: Long): User {
+        return userDao.getById(userId).toDto()
     }
 }

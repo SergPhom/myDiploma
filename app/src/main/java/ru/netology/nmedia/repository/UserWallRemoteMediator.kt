@@ -23,15 +23,16 @@ class UserWallRemoteMediator @Inject constructor(
     private val dao: UserWallDao,
     private val userWallRemoteKeyDao: UserWallRemoteKeyDao,
     private val db: AppDb,
-    userId: Long
+    private val userId: Long
 ): RemoteMediator<Int, UserWallEntity>() {
 
-    val userID = userId
     override suspend fun initialize(): InitializeAction =
         if(dao.isEmpty()){
             InitializeAction.LAUNCH_INITIAL_REFRESH
         } else {
-            InitializeAction.SKIP_INITIAL_REFRESH
+            dao.removeAll()
+            userWallRemoteKeyDao.removeAll()
+            InitializeAction.LAUNCH_INITIAL_REFRESH
         }
 
     private fun checkResponse(response: Response<List<Post>>): List<Post> {
@@ -39,7 +40,6 @@ class UserWallRemoteMediator @Inject constructor(
             throw ApiError(response.code(), response.message())
         }
         val body = response.body()
-        //body?.forEach { println("Response is $it") }
         return body ?: throw ApiError(response.code(), response.message())
     }
 
@@ -51,22 +51,20 @@ class UserWallRemoteMediator @Inject constructor(
             val response = when (loadType) {
                 LoadType.REFRESH -> {
                     if (userWallRemoteKeyDao.isEmpty()) {
-                        apiService.getLatest( userID, state.config.pageSize)
+                        apiService.getLatest( userId, state.config.pageSize)
                     } else{
                         val id = userWallRemoteKeyDao.max() ?:
                         return  MediatorResult.Success(false)
-                        apiService.getAfter(id, state.config.pageSize)
+                        apiService.getAfter(userId, id, state.config.pageSize)
                     }
                 }
                 LoadType.APPEND -> {
-                    println("append working")
                     val id = userWallRemoteKeyDao.min() ?:
                     return MediatorResult.Success(false)
                     apiService.getBefore(
-                        id, state.config.pageSize)
+                        userId, id, state.config.pageSize)
                 }
                 LoadType.PREPEND -> {
-                    println("prepend  working")
                     return MediatorResult.Success(false)
                 }
             }
@@ -102,7 +100,6 @@ class UserWallRemoteMediator @Inject constructor(
             return MediatorResult.Success(posts.isEmpty())
 
         } catch (t: Throwable) {
-            println("WallRemoteMedi error is $t")
             return MediatorResult.Error(t)
         }
     }

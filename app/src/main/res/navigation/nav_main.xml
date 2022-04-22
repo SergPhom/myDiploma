@@ -56,6 +56,12 @@
         <argument
             android:name="USER_ID"
             app:argType="long" />
+        <argument
+            android:name="USER_AVATAR"
+            app:argType="string" />
+        <argument
+            android:name="USER_NAME"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/newPostFragment"

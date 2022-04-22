@@ -66,8 +66,9 @@ class NewEventFragment: Fragment() {
             if (viewModel.type.value == EventType.NONE
                 || viewModel.datetime.value == OffsetDateTime.MIN
             ) {
-                println("new event ${viewModel.type.value == EventType.NONE}  ${viewModel.datetime.value == OffsetDateTime.MIN}")
-                Toast.makeText(activity, R.string.job_warning, Toast.LENGTH_LONG).show()
+                Toast.makeText(activity,
+                    R.string.job_warning,
+                    Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             } else{
                 viewModel.changeEvent(
@@ -104,9 +105,8 @@ class NewEventFragment: Fragment() {
 
         binding.setTime.setOnClickListener {
             viewModel.datetime.value = date
-                .atTime(binding.timer.hour,binding.timer.minute,58,1000000).atOffset(ZoneOffset.UTC)
-            println("datetime is ${viewModel.datetime.value}")
-
+                .atTime(binding.timer.hour,binding.timer.minute,58,1000000)
+                .atOffset(ZoneOffset.UTC)
             binding.timer.visibility = View.GONE
         }
 

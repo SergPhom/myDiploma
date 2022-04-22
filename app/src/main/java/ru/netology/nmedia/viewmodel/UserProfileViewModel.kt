@@ -29,7 +29,6 @@ class UserProfileViewModel @Inject constructor(
 
     var isMyId = appAuth
         .authStateFlow.map {
-        println("auth id is ${it.id} and my id is ${id.value}")
             it.id == id.value }
         .asLiveData(Dispatchers.Default)
 
@@ -53,7 +52,7 @@ class UserProfileViewModel @Inject constructor(
            finish = finishDate,
            link = link
        )
-       println("job is - $job")
+
         try {
             repository.saveJob(job)
         }catch (t: Throwable){
