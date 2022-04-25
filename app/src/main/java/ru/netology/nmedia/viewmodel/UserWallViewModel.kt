@@ -1,6 +1,5 @@
 package ru.netology.nmedia.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +16,7 @@ import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.repository.UserRepositoryImpl
 import ru.netology.nmedia.repository.UserWallRepository
+import java.lang.Exception
 import javax.inject.Inject
 
 
@@ -49,6 +49,25 @@ class UserWallViewModel @Inject constructor(
     fun clearData(){
         viewModelScope.launch {
             repository.clearData()
+        }
+    }
+    fun likePost(post: Post){
+        if (post.likedByMe) {
+            viewModelScope.launch {
+                try {
+                    repository.dislikePost(post)
+                } catch (e: Exception) {
+                    println("liking post error is $e")
+                }
+            }
+        } else{
+            viewModelScope.launch {
+                try {
+                    repository.likePost(post)
+                } catch (e: Exception) {
+                    println("liking post error is $e")
+                }
+            }
         }
     }
 }

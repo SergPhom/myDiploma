@@ -1,13 +1,16 @@
 package ru.netology.nmedia.repository
 
-import androidx.paging.Pager
-import androidx.paging.map
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.paging.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import ru.netology.nework.entity.JobEntity
 import ru.netology.nework.entity.fromDto
 import ru.netology.nmedia.api.JobApiService
 import ru.netology.nmedia.dao.JobDao
+import ru.netology.nmedia.dao.JobRemoteKeyDao
+import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.UserJob
 import ru.netology.nmedia.error.ApiError
 import ru.netology.nmedia.error.NetworkError
@@ -18,14 +21,21 @@ import javax.inject.Inject
 class JobRepositoryImpl @Inject constructor(
     private val jobApiService: JobApiService,
     private val jobDao: JobDao,
-    pager: Pager<Int, JobEntity>
+    private val jobKeyDao: JobRemoteKeyDao,
+    private val db: AppDb,
 ): JobRepository {
 
-    override val data = pager
+    @RequiresApi(Build.VERSION_CODES.O)
+    @OptIn(ExperimentalPagingApi::class)
+    override fun userProfileData(userId: Long): Flow<PagingData<UserJob>> = Pager(
+        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+        remoteMediator = JobRemoteMediator(jobApiService, jobDao,
+            jobKeyDao, db, userId),
+        pagingSourceFactory = { jobDao.getAll() },
+    )
         .flow
         .map { it.map(JobEntity::toDto) }
-        .also { flow -> flow.map { it1 -> it1.map { println("data unit is $it") } } }
-        .catch { println("Job repo data error is $it") }
+        .catch { println("UserProfile error in repository data is - $it") }
         .flowOn(Dispatchers.Default)
 
 
@@ -36,7 +46,6 @@ class JobRepositoryImpl @Inject constructor(
                 throw ApiError(response.code(), response.message())
             }
             val body = response.body() ?: throw ApiError(response.code(), response.message())
-            println("Event repos. body is $body")
             jobDao.insert(body.fromDto())
         } catch (e: IOException) {
             throw NetworkError
@@ -51,8 +60,8 @@ class JobRepositoryImpl @Inject constructor(
             if(!response.isSuccessful){
                 throw ApiError(response.code(), response.message())
             }
-            val body = response.body()
-            println("Job response is $body")
+            val jobs = response.body() ?: throw ApiError(response.code(), response.message())
+            jobDao.insert(jobs.fromDto())
         }catch (t: Throwable){
             println("JobRepository error is $t")
         }
@@ -60,6 +69,8 @@ class JobRepositoryImpl @Inject constructor(
 
     override suspend fun removeJob(userJob: UserJob) {
         jobApiService.deleteJob(userJob.id)
+        jobDao.removeById(userJob.id)
+        jobKeyDao.removeAll()
     }
 
 }

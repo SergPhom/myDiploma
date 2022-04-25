@@ -65,7 +65,6 @@ data class UserWallEntity(
             }catch (t: Throwable){
                 println("post entity error is $t")
             }
-            println("Entity is $entity")
             return entity
         }
     }

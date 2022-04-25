@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="@dimen/offset">
 
-
+    //company name title
     <TextView
         android:id="@+id/company"
         android:layout_width="wrap_content"
@@ -14,6 +14,16 @@
         app:layout_constraintStart_toStartOf="parent"
         android:text="@string/company_name"/>
 
+    //menu
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/menu"
+        style="@style/Widget.App.Button.OutlinedButton.Menu"
+        android:padding="0dp"
+        app:icon="@drawable/ic_more_vert_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    //compane name
     <TextView
         android:layout_marginTop="@dimen/little_offset"
         android:layout_marginStart="@dimen/double_offset"
@@ -24,8 +34,9 @@
         app:layout_constraintStart_toStartOf="parent"
         android:text="@string/company_name"/>
 
+    //position title
     <TextView
-        android:id="@+id/position"
+        android:id="@+id/positionTitle"
         android:layout_marginTop="@dimen/offset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,34 +47,65 @@
         android:linksClickable="true"
         />
 
+    //position
     <TextView
         android:layout_marginStart="@dimen/double_offset"
         android:layout_marginTop="@dimen/little_offset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/userPosition"
-        app:layout_constraintTop_toBottomOf="@id/position"
+        app:layout_constraintTop_toBottomOf="@id/positionTitle"
         app:layout_constraintStart_toStartOf="parent"
         android:text="@string/position_in_company"/>
 
-    <TextView
-        android:id="@+id/startDate"
-        android:layout_marginTop="@dimen/offset"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/userPosition"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="@string/start_date"/>
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/positionStart"
-        android:layout_marginTop="@dimen/little_offset"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/startDate"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="@string/start_date"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/startDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/start_date"/>
 
+            <TextView
+                android:id="@+id/positionStart"
+                android:layout_marginTop="@dimen/little_offset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/start_date"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/finishDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/finish_date"/>
+
+            <TextView
+                android:id="@+id/positionFinish"
+                android:layout_marginTop="@dimen/little_offset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/finish_date"/>
+        </LinearLayout>
+
+
+
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

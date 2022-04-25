@@ -14,12 +14,4 @@ class SharedViewModel @Inject constructor() : ViewModel() {
     fun select() {
         selected.value = true
     }
-
-    val maxId = MutableLiveData(0L)
-
-    fun maxChange(newMax: Long){
-        maxId.value = newMax
-    }
-
-    val userID = MutableLiveData(0L)
 }

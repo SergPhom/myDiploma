@@ -12,20 +12,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.viewmodel.PostViewModel
-import com.github.dhaval2404.imagepicker.*
 import com.github.dhaval2404.imagepicker.constant.ImageProvider
 import dagger.hilt.android.AndroidEntryPoint
+import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.viewmodel.SharedViewModel
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -50,7 +49,7 @@ class NewPostFragment: Fragment() {
             inflater,
             container,
             false)
-           //*********************************************************** обработка onBack
+           // обработка onBack
         val callback = object : OnBackPressedCallback(true){
 
             override fun handleOnBackPressed() {
@@ -63,17 +62,16 @@ class NewPostFragment: Fragment() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(callback)
-          //*********************************************************** EDIT post/NEW post
 
+        //init block
         binding.content.requestFocus()
-
         binding.content.setText(arguments?.getString("textArg"))
-
         if(binding.content.text.isNullOrBlank()){
             binding.content.setText(viewModel.draft)
             viewModel.draft = ""
         }
-         //*********************************************************** Listeners
+
+        //save and cancel
         binding.okButton.setOnClickListener {
             viewModel.changeContent(binding.content.text.toString())
             viewModel.save()
@@ -81,7 +79,6 @@ class NewPostFragment: Fragment() {
             AndroidUtils.hideKeyboard(requireView())
             findNavController().navigateUp()
         }
-
         binding.cancelButton.setOnClickListener {
             with(binding.content){
                 viewModel.cancel()
@@ -92,6 +89,7 @@ class NewPostFragment: Fragment() {
             }
         }
 
+        //photo functions block
         val pickPhotoLauncher =
             registerForActivityResult(
                 ActivityResultContracts.StartActivityForResult()
@@ -110,7 +108,6 @@ class NewPostFragment: Fragment() {
                     }
                 }
             }
-
         binding.pickPhoto.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
@@ -125,7 +122,6 @@ class NewPostFragment: Fragment() {
                 )
                 .createIntent(pickPhotoLauncher::launch)
         }
-
         binding.takePhoto.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
@@ -133,11 +129,9 @@ class NewPostFragment: Fragment() {
                 .provider(ImageProvider.CAMERA)
                 .createIntent(pickPhotoLauncher::launch)
         }
-
         binding.removePhoto.setOnClickListener {
             viewModel.changePhoto(null, null)
         }
-
         viewModel.photo.observe(viewLifecycleOwner) {
             if (it.uri == null) {
                 binding.photoContainer.visibility = View.GONE
@@ -148,14 +142,23 @@ class NewPostFragment: Fragment() {
             binding.photo.setImageURI(it.uri)
         }
 
+        //coords
+        binding.coords.setOnClickListener {
+            findNavController().navigate(R.id.action_newPostFragment_to_mapsFragment)
+        }
+
+        //link
+        binding.link.setOnClickListener {
+
+        }
+
+        //singOut dialog
         model.selected.observe(viewLifecycleOwner){
             if(it) binding.signOutDialog.visibility = View.VISIBLE
         }
-
         binding.signOutDialogCancel.setOnClickListener {
             binding.signOutDialog.visibility = View.GONE
         }
-
         binding.signOutButton.setOnClickListener {
            appAuth.removeAuth()
             with(binding.content){
@@ -166,6 +169,8 @@ class NewPostFragment: Fragment() {
                 findNavController().navigateUp()
             }
         }
+
+
         return binding.root
     }
 

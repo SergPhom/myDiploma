@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.annotation.RequiresApi
+import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -17,25 +18,20 @@ import ru.netology.nmedia.dto.Event
 import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.view.load
 import ru.netology.nmedia.view.loadAvatar
-import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.time.temporal.ChronoUnit
-import java.util.*
-import kotlin.time.Duration.Companion.days
 
 
 interface EventCallback {
     fun onLiked(event: Event){}
-    fun onShared(event: Event){}
+    fun onPlace(event: Event){}
     fun onRemove(event: Event){}
     fun onEdit(event: Event){}
     fun onPlay(event: Event){}
     fun onSingleView(event: Event){}
     fun onSingleViewImageOnly(event: Event){}
-    fun onSavingRetry(event: Event){}
 }
 
 class EventsAdapter (
@@ -87,6 +83,10 @@ class EventViewHolder(
     @RequiresApi(Build.VERSION_CODES.O)
     fun bind(event: Event) {
         binding.apply {
+            place.isVisible = event.coords != null
+            place.setOnClickListener {
+                callback.onPlace(event)
+            }
             event.authorAvatar?.let { avatar.loadAvatar(it) }
             author.text = "${event.author}  ${event.id}"
             published.text = formatter.format(Instant.parse(event.published))
@@ -98,12 +98,9 @@ class EventViewHolder(
             )
             likes.isChecked = event.likedByMe
             likes.setIconTintResource(R.color.like_button_tint)
-
-            //******************************************************************Listeners
             likes.setOnClickListener {
                 callback.onLiked(event)
             }
-
 
             val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
                 .withZone( ZoneId.systemDefault() )
@@ -137,10 +134,6 @@ class EventViewHolder(
                 }.show()
             }
 
-            retrySaving.setOnClickListener {
-                callback.onSavingRetry(event)
-            }
-
             video.setOnClickListener {
                 callback.onPlay(event)
             }
@@ -153,11 +146,6 @@ class EventViewHolder(
             content.setOnClickListener{ callback.onSingleView(event)}
             published.setOnClickListener{ callback.onSingleView(event)}
             imageAttachment.setOnClickListener { callback.onSingleViewImageOnly(event) }
-            //******************************************************************Options
-//            if (!post.saved){
-//                binding.buttonGroup.visibility = View.GONE
-//                binding.retrySaving.visibility = View.VISIBLE
-//            }
 
             if (event.attachment != null) {
                 when (event.attachment.type){

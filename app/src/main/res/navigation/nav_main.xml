@@ -41,9 +41,6 @@
         <action
             android:id="@+id/action_feedFragment_to_eventFragment"
             app:destination="@id/eventFragment" />
-        <action
-            android:id="@+id/action_feedFragment_to_userProfileFragment"
-            app:destination="@id/userProfileFragment" />
         <argument
             android:name="userName"
             app:argType="string" />
@@ -67,7 +64,15 @@
         android:id="@+id/newPostFragment"
         android:name="ru.netology.nmedia.activity.NewPostFragment"
         android:label="fragment_new_post"
-        tools:layout="@layout/fragment_new_post" />
+        tools:layout="@layout/fragment_new_post" >
+        <action
+            android:id="@+id/action_newPostFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"/>
+    </fragment>
     <fragment
         android:id="@+id/authFragment"
         android:name="ru.netology.nmedia.activity.AuthFragment"
@@ -100,9 +105,6 @@
             android:id="@+id/action_eventFragment_to_feedFragment"
             app:destination="@id/feedFragment" />
         <action
-            android:id="@+id/action_eventFragment_to_userProfileFragment"
-            app:destination="@id/userProfileFragment" />
-        <action
             android:id="@+id/action_eventFragment_to_newEventFragment"
             app:destination="@id/newEventFragment" />
         <action
@@ -111,6 +113,12 @@
         <action
             android:id="@+id/action_eventFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_eventFragment_to_mapsFragment"
+            app:destination="@id/mapsFragment" />
+        <action
+            android:id="@+id/action_eventFragment_to_userWallFragment"
+            app:destination="@id/userWallFragment" />
     </fragment>
     <fragment
         android:id="@+id/userProfileFragment"
@@ -121,11 +129,7 @@
         android:id="@+id/mapsFragment"
         android:name="ru.netology.nmedia.activity.MapsFragment"
         android:label="MapsFragment"
-        tools:layout="@layout/fragment_map">
-        <action
-            android:id="@+id/action_mapsFragment_to_newEventFragment"
-            app:destination="@id/newEventFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_map"/>
     <fragment
         android:id="@+id/userWallFragment"
         android:name="ru.netology.nmedia.activity.UserWallFragment"
@@ -134,6 +138,9 @@
         <action
             android:id="@+id/action_userWallFragment_to_userProfileFragment"
             app:destination="@id/userProfileFragment" />
+        <action
+            android:id="@+id/action_userWallFragment_to_singlePostFragment"
+            app:destination="@id/singlePostFragment" />
     </fragment>
     <fragment
         android:id="@+id/newEventFragment"

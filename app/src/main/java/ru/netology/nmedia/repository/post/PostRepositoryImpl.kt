@@ -47,7 +47,6 @@ class PostRepositoryImpl @Inject constructor(
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
-
             val body = response.body() ?: throw ApiError(response.code(), response.message())
             dao.insert(body.toEntity())
         } catch (e: IOException) {
@@ -56,10 +55,6 @@ class PostRepositoryImpl @Inject constructor(
             throw UnknownError
         }
     }
-
-//    override suspend fun newerPostsViewed(){
-//        dao.allViewedTrue()
-//    }
 
     override fun getNewerCount(): Flow<Int> = flow {
         while (true) {
@@ -108,7 +103,6 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    //                                                                     ***LIKE/DISLIKE****
     override suspend fun likeById(id: Long) {
         try {
             val response = postsApiService.likeById(id)
@@ -118,7 +112,6 @@ class PostRepositoryImpl @Inject constructor(
 
             val body = response.body() ?: throw ApiError(response.code(), response.message())
             dao.insert(PostEntity.fromDto(body))
-//            dao.onLikeButtonClick(id)
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
@@ -135,7 +128,6 @@ class PostRepositoryImpl @Inject constructor(
 
             val body = response.body() ?: throw ApiError(response.code(), response.message())
             dao.insert(PostEntity.fromDto(body))
-//            dao.onLikeButtonClick(id)
         } catch (e: IOException) {
             throw NetworkError
         } catch (e: Exception) {
@@ -143,7 +135,6 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    //                                                                                ****REMOVE*****
     override suspend fun removeById(id: Long) {
         try {
             val response = postsApiService.removeById(id)
@@ -157,8 +148,6 @@ class PostRepositoryImpl @Inject constructor(
             throw UnknownError
         }
     }
-
-    //                                                                             *******SHARE*****
 
     override suspend fun upload(upload: MediaUpload): Media {
         try {

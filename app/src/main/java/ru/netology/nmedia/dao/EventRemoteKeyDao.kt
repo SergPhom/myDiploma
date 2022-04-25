@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import ru.netology.nmedia.entity.EventRemoteKeyEntity
-import ru.netology.nmedia.entity.PostRemoteKeyEntity
 
 @Dao
 interface EventRemoteKeyDao {

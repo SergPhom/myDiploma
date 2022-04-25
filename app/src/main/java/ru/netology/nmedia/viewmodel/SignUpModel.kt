@@ -32,7 +32,6 @@ class SignUpModel @Inject constructor(
     }
     fun changePhoto(uri: Uri?, file: File?) {
         _photo.value = PhotoModel(uri, file)
-        println(" photo is ${_photo.value}")
     }
     fun registrate(login: String,
                    password: String,
@@ -52,6 +51,7 @@ class SignUpModel @Inject constructor(
                 }
                 val body = response.body() ?: throw ApiError(response.code(), response.message())
                 setAuth(body.id, body.token)
+                _photo.value = noPhoto
             } catch (t: Throwable) {
                 println("registration error is $t")
                 //throw NetworkError

@@ -24,11 +24,6 @@ import javax.inject.Singleton
 @Module
 object ApiModule {
 
-//    @Provides
-//    @Singleton
-//    fun provideUserPrefs(@ApplicationContext context: Context): SharedPreferences =
-//        context.getSharedPreferences("user", Context.MODE_PRIVATE)
-
     private const val BASE_URL = "${BuildConfig.BASE_URL}/api/"
 
     @Provides
@@ -51,17 +46,6 @@ object ApiModule {
                 authPrefs.getString(TOKEN_KEY, null)?.let { token ->
                     val newRequest = chain.request().newBuilder()
                         .addHeader("Authorization", token)
-                        .build()
-                        .also { println("Request url is ${chain.request().url}") }
-                    return@addInterceptor chain.proceed(newRequest)
-                }
-                chain.proceed(chain.request())
-                    .also { println("Request url is ${chain.request().url}") }
-            }
-            .addInterceptor { chain ->
-                authPrefs.getString(USER_ID, null)?.let { userId ->
-                    val newRequest = chain.request().newBuilder()
-                        .url("https://nework-diploma.herokuapp.com/api/$userId/wall/latest?count=30")
                         .build()
                     return@addInterceptor chain.proceed(newRequest)
                 }

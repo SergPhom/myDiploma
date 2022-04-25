@@ -1,17 +1,16 @@
 package ru.netology.nmedia.viewmodel
 
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.netology.nmedia.activity.userId
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.UserJob
 import ru.netology.nmedia.repository.JobRepository
@@ -21,38 +20,44 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
-    private val appAuth: AppAuth,
+    private val savedStateHandle: SavedStateHandle,
+    appAuth: AppAuth,
     private val repository: JobRepository
 ):ViewModel() {
 
-    var id: MutableLiveData<Long> = MutableLiveData(0L)
+    fun userId(): Long{
+        return savedStateHandle.userId
+    }
 
-    var isMyId = appAuth
-        .authStateFlow.map {
-            it.id == id.value }
-        .asLiveData(Dispatchers.Default)
+    val isMyJobs = appAuth.authStateFlow.value.id == userId()
 
-
-    private val cashed = repository.data
+    private val cashed = repository.userProfileData(userId())
         .cachedIn(viewModelScope)
 
-    val data: Flow<PagingData<UserJob>> = cashed
+    val data: Flow<PagingData<UserJob>> = appAuth
+        .authStateFlow
+        .flatMapLatest { (myId, _) ->
+            cashed.map { userJobs ->
+                userJobs.map { job ->
+                    job.copy(isMyJob = myId == userId())
+                }
+            }
+        }
 
-    fun save(companyName: String,
-                    position: String,
-                    startDate: Long,
-                    finishDate: Long? = null,
-                    link: String? = null
+    fun save(id: Long,
+             companyName: String,
+             position: String,
+             startDate: Long,
+             finishDate: Long? = null,
+             link: String? = null
     ) = viewModelScope.launch {
-       val job = UserJob(
-           id = 0,
-           name = companyName,
-           position = position,
-           start = startDate,
-           finish = finishDate,
-           link = link
-       )
-
+        val job = UserJob(
+            id = id,
+            name = companyName,
+            position = position,
+            start = startDate,
+            finish = finishDate,
+            link = link)
         try {
             repository.saveJob(job)
         }catch (t: Throwable){
@@ -60,4 +65,13 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
+    fun removeJob(job: UserJob){
+        viewModelScope.launch {
+            try {
+                repository.removeJob(job)
+            } catch (t: Throwable){
+                println("Job remove error is $t")
+            }
+        }
+    }
 }

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
@@ -35,6 +36,18 @@ class SignUpFragment: Fragment() {
             inflater,
             container,
             false)
+        // onBackPressed
+        val callback = object : OnBackPressedCallback(true){
+
+            override fun handleOnBackPressed() {
+                try{
+                    findNavController().navigateUp()
+                }catch (e: Throwable){
+                    println("onBackPressed error is $e")
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(callback)
 
         val pickPhotoLauncher =
             registerForActivityResult(
@@ -50,7 +63,6 @@ class SignUpFragment: Fragment() {
                     }
                     Activity.RESULT_OK -> {
                         val uri: Uri? = it.data?.data
-                        println("URI IS $uri")
                         viewModel.changePhoto(uri, uri?.toFile())
 
                     }

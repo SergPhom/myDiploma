@@ -2,12 +2,13 @@ package ru.netology.nmedia.repository
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.UserJob
 
 
 interface JobRepository {
 
-    val data: Flow<PagingData<UserJob>>
+    fun userProfileData(userId: Long): Flow<PagingData<UserJob>>
 
     suspend fun getAll(id: Long)
 

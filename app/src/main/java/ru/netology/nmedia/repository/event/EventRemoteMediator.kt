@@ -28,10 +28,8 @@ class EventRemoteMediator @Inject constructor(
 
     override suspend fun initialize(): InitializeAction =
         if(dao.isEmpty()){
-            println("Event remMedi DB is empty")
             InitializeAction.LAUNCH_INITIAL_REFRESH
         } else {
-            println("Event remMedi DB is NOT empty")
             InitializeAction.SKIP_INITIAL_REFRESH
         }
 

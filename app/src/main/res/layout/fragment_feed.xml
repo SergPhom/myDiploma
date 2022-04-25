@@ -3,87 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/feedMain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/feedMain"
     tools:context=".FeedFragment">
     <androidx.constraintlayout.widget.ConstraintLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/newerPosts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="0dp"
-            android:text="Newer posts"
-            android:visibility="invisible"
-            app:backgroundTint="@color/purple_700"
-            app:cornerRadius="@dimen/avatar_size"
-            app:icon="@drawable/ic_baseline_arrow_upward_24"
-            app:iconGravity="start"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />  //newer
-
-        <TextView
-            android:visibility="gone"
-            android:id="@+id/retryTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/offset"
-            android:text="@string/error_loading"
-            app:layout_constraintBottom_toTopOf="@+id/retryButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
-            />     //retry
-
-        <Button
-            android:id="@+id/retryButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/retry_loading"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#000000"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/retryTitle"
-            tools:text="@string/retry_loading"
-            android:visibility="gone"
-            />         //retry
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/errorGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="retryTitle,retryButton"
-            android:visibility="gone"/>   //retry group
-
-  <TextView
-            android:id="@+id/emptyText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/empty_posts"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />          //empty posts
-
-        <ProgressBar
-            android:id="@+id/progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refresh"
             android:layout_width="match_parent"
@@ -96,9 +22,10 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/card_post" />
+                tools:listitem="@layout/card_post"
+                android:nestedScrollingEnabled="true"/>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
+        //signIn dialog
         <LinearLayout
             android:id="@+id/sign_in_dialog"
             android:layout_width="wrap_content"
@@ -131,7 +58,7 @@
                 android:textColor="@color/cancel_red"
                 android:background="@color/transparent"
                 android:text="@string/cancel"/>
-        </LinearLayout>    // dialog
+        </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
@@ -147,3 +74,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.circularreveal.coordinatorlayout.CircularRevealCoordinatorLayout>
+
+
+

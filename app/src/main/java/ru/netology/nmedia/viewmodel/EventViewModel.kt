@@ -1,11 +1,9 @@
 package ru.netology.nmedia.viewmodel
 
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
@@ -20,7 +18,10 @@ import ru.netology.nework.enumeration.EventType
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.Coordinates
 import ru.netology.nmedia.dto.Event
+import ru.netology.nmedia.dto.MediaUpload
+import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.event.EventRepository
+import java.io.File
 import java.lang.Exception
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -38,6 +39,7 @@ private val empty = Event(
     attachment = null,
     type = EventType.ONLINE.toString()
 )
+private val noPhoto = PhotoModel()
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -46,11 +48,22 @@ class EventViewModel @Inject constructor(
     private val appAuth: AppAuth,
 ): ViewModel() {
 
+    //values and variables
     val edited = MutableLiveData(empty)
     val datetime = MutableLiveData(OffsetDateTime.MIN)
     val type = MutableLiveData(EventType.NONE)
+    private val _photo = MutableLiveData(noPhoto)
+    val photo: LiveData<PhotoModel>
+        get() = _photo
     private val cashed = repository.data
         .cachedIn(viewModelScope)
+    val authenticated = appAuth
+        .authStateFlow.map {
+            it.id != 0L
+        }
+        .asLiveData(Dispatchers.Default)
+
+    //data
     val data: Flow<PagingData<Event>> = appAuth
         .authStateFlow
         .flatMapLatest { (myId,_) ->
@@ -62,19 +75,7 @@ class EventViewModel @Inject constructor(
             }
         }
 
-    val authenticated = appAuth
-        .authStateFlow.map {
-            it.id != 0L
-        }
-        .asLiveData(Dispatchers.Default)
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun clearEvent(){
-        datetime.value = OffsetDateTime.MIN
-        type.value = EventType.NONE
-        edited.value = empty
-    }
-
+    //CRUD operations
     fun changeEvent(content: String,
                     link: String?,
                     coords: Coordinates?
@@ -90,31 +91,56 @@ class EventViewModel @Inject constructor(
             coords = coords
         )
     }
-
+    fun changePhoto(uri: Uri?, file: File?) {
+        _photo.value = PhotoModel(uri, file)
+    }
     @RequiresApi(Build.VERSION_CODES.O)
     fun save() {
         edited.value?.let {
             it.published = Instant.now().toString()
-            println("Instant is   ${Instant.now()} ")
             viewModelScope.launch {
                 repository.saveEvent(it)
-//                try {
-//                    when(_photo.value) {
-//                        noPhoto -> repository.savePost(it)
-//                        else -> _photo.value?.file?.let { file ->
-//                            repository.savePostWithAttachment(it, MediaUpload(file))
-//                        }
-//                    }
-//                    _dataState.value = FeedModelState()
-//                } catch (e: Exception) {
-//                    _dataState.value = FeedModelState( msg = "Saving error")
-//                }
+                try {
+                    when(_photo.value) {
+                        noPhoto -> repository.saveEvent(it)
+                        else -> _photo.value?.file?.let { file ->
+                            repository.saveEventWithAttachment(it, MediaUpload(file))
+                        }
+                    }
+                } catch (e: Exception) {
+                    println("event save error is $e")
+                }
             }
         }
         edited.value = empty
-        //_photo.value = noPhoto
+        _photo.value = noPhoto
     }
 
+    fun likeEvent(event: Event){
+        if(event.likedByMe){
+            viewModelScope.launch {
+                try {
+                    repository.dislikeById(event.id)
+                } catch (e: Exception) {
+                    println("liking event error is $e")
+                }
+        } }else{
+                viewModelScope.launch {
+                    try {
+                        repository.likeById(event.id)
+                    } catch (e: Exception) {
+                        println("liking post error is $e")
+                    }
+                }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun clearEvent(){
+        datetime.value = OffsetDateTime.MIN
+        type.value = EventType.NONE
+        edited.value = empty
+    }
     fun removeEvent(event: Event) {
         viewModelScope.launch {
             try {

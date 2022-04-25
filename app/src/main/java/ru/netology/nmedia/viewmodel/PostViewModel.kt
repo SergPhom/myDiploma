@@ -12,10 +12,8 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.*
-import ru.netology.nmedia.model.FeedModelState
 import ru.netology.nmedia.model.PhotoModel
 import ru.netology.nmedia.repository.post.PostRepository
-import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.File
 import java.lang.Exception
 import java.time.Instant
@@ -45,105 +43,48 @@ class PostViewModel @Inject constructor(
     private val appAuth: AppAuth,
 ): ViewModel(){
 
+    val authenticated = appAuth
+        .authStateFlow.map {
+            it.id != 0L
+        }
+        .asLiveData(Dispatchers.Default)
+    val edited = MutableLiveData(empty)
+    var draft = ""
+    private val _photo = MutableLiveData(noPhoto)
+    val photo: LiveData<PhotoModel>
+        get() = _photo
+
+    //data
     private val cashed = repository.data
         .cachedIn(viewModelScope)
-
     val data: Flow<PagingData<FeedItem>> = appAuth
         .authStateFlow
         .flatMapLatest { (myId, _) ->
             cashed.map { posts ->
                 posts.map {
                     it.copy(ownedByMe = it.authorId == myId, likedByMe = it.likeOwnerIds.contains(myId))
-//                        .also {
-//                            println(
-//                                " ${it.id} ${
-//                                    (Date().time.milliseconds - Date(it.published).time.seconds) > Date(
-//                                        1
-//                                    ).time.days
-//                                }"
-//                            )
-//                        }
                 }
-//                    .insertSeparators { _,next ->
-//                    if(next != null){
-//                        if(compareToDays(next.published, 1L) <= 0){
-//                            DateHeader(2L, " Сегодня  ")
-//                        } else if (compareToDays(next.published, 1L) > 0){
-//                            DateHeader(2L, " Вчера  ")
-//                        } else if (compareToDays(next.published, 2L) > 0){
-//                            DateHeader(2L, " На прошлой неделе  ")
-//                        }else{
-//                            null
-//                        }
-//                    }else{
-//                        null
-//                    }
-//                }
-//                    .insertSeparators { previous, next ->
-//                    if (previous?.id?.rem(5) == 0L) {
-//                        Ad(
-//                            Random.nextLong(),
-//                            url = "https://netology.ru",
-//                            image = "Figma.jpg"
-//                        )
-//                    } else {
-//                        null
-//                    }
-//                }
             }
         }
-
-    private fun compareToDays(published: Long, days: Long): Int{
-        return (Date().time.milliseconds - Date(published).time.seconds)
-            .compareTo(Date(days).time.days)
-    }
-
-    val authenticated = appAuth
-        .authStateFlow.map {
-            it.id != 0L
-        }
-        .asLiveData(Dispatchers.Default)
-
-
-    private val _dataState = MutableLiveData<FeedModelState>()
-    val dataState: LiveData<FeedModelState>
-        get() = _dataState
-
-    private val _postCreated = SingleLiveEvent<Unit>()
-    val postCreated: LiveData<Unit>
-        get() = _postCreated
-
-    val edited = MutableLiveData(empty)
-    var draft = ""
-
-    val newerCount: LiveData<Int> = data.asLiveData().switchMap {
-         repository.getNewerCount()
-            .catch { e -> e.printStackTrace() }
-            .asLiveData(Dispatchers.Default)
-    }
-
-    private val _photo = MutableLiveData(noPhoto)
-    val photo: LiveData<PhotoModel>
-        get() = _photo
-
 
     fun forAuthenticated() {
         edited.postValue(empty.copy(authorId = appAuth.authStateFlow.value.id))
     }
 
-//    fun markNewerPostsViewed()= viewModelScope.launch {
-//        try {
-//            repository.newerPostsViewed()
-//        } catch (e: Exception) {
-//            println("PW $e")
-//            return@launch
-//        }
-//    }
-
+    //CRUD operations
+    fun changeContent(content: String) {
+        val text = content.trim()
+        if (edited.value?.content == text) {
+            return
+        }
+        edited.value = edited.value?.copy(content = text)
+    }
+    fun onEdit(post: Post){
+        edited.value = post
+    }
     @RequiresApi(Build.VERSION_CODES.O)
     fun save() {
         edited.value?.let {
-            _postCreated.postValue(Unit)
             it.published = Instant.now().toString()
             viewModelScope.launch {
                 try {
@@ -153,9 +94,8 @@ class PostViewModel @Inject constructor(
                             repository.savePostWithAttachment(it, MediaUpload(file))
                         }
                     }
-                    _dataState.value = FeedModelState()
                 } catch (e: Exception) {
-                    _dataState.value = FeedModelState( msg = "Saving error")
+                    println("saving post error is $e")
                 }
             }
         }
@@ -163,47 +103,32 @@ class PostViewModel @Inject constructor(
         _photo.value = noPhoto
     }
 
-    fun onEdit(post: Post){
-        edited.value = post
-    }
-
-    fun changeContent(content: String) {
-        val text = content.trim()
-        if (edited.value?.content == text) {
-            return
-        }
-        edited.value = edited.value?.copy(content = text)
-    }
-//                                                                    ****LIKES BLOCK****
     fun onLiked(post: Post) {
         if (post.likedByMe) {
            viewModelScope.launch {
                try {
                    repository.dislikeById(post.id)
-                   _dataState.value = FeedModelState()
                } catch (e: Exception) {
-                   _dataState.value = FeedModelState( msg = "disliking error ")
+                   println("liking post error is $e")
                }
            }
         } else{
             viewModelScope.launch {
                 try {
                     repository.likeById(post.id)
-                    _dataState.value = FeedModelState()
                 } catch (e: Exception) {
-                    _dataState.value = FeedModelState( msg = "Liking error ")
+                    println("liking post error is $e")
                 }
             }
         }
     }
-//                                                                   ****REMOVE BLOCK****
+
     fun onRemove(post: Post) {
     viewModelScope.launch {
         try {
             repository.removeById(post.id)
-            _dataState.value = FeedModelState()
         } catch (e: Exception) {
-            _dataState.value = FeedModelState( msg = "Remove error ")
+            println("removing post error is $e")
         }
     }
     }

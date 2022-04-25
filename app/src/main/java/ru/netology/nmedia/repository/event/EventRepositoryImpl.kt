@@ -9,15 +9,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import ru.netology.nework.entity.EventEntity
 import ru.netology.nework.entity.fromDto
 import ru.netology.nmedia.api.EventApiService
+import ru.netology.nmedia.api.MediaApiService
 import ru.netology.nmedia.dao.EventDao
+import ru.netology.nmedia.dto.Attachment
 import ru.netology.nmedia.dto.Event
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.MediaUpload
-import ru.netology.nmedia.entity.PostEntity
+import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.error.ApiError
+import ru.netology.nmedia.error.AppError
 import ru.netology.nmedia.error.NetworkError
 import ru.netology.nmedia.error.UnknownError
 import java.io.IOException
@@ -27,6 +32,7 @@ import javax.inject.Singleton
 @Singleton
 class EventRepositoryImpl @Inject constructor(
     private val eventApiService: EventApiService,
+    private val mediaApiService: MediaApiService,
     private val eventDao: EventDao,
     pager: Pager<Int, EventEntity>
 ): EventRepository {
@@ -56,11 +62,33 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun likeById(id: Long) {
-        TODO("Not yet implemented")
+        try {
+            val response = eventApiService.likeEvent(id)
+            if(!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+            val body = response.body() ?: throw ApiError (response.code(), response.message())
+            eventDao.insert(EventEntity.fromDto(body))
+        }catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
     override suspend fun dislikeById(id: Long) {
-        TODO("Not yet implemented")
+        try {
+            val response = eventApiService.dislikeEvent(id)
+            if(!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+            val body = response.body() ?: throw ApiError (response.code(), response.message())
+            eventDao.insert(EventEntity.fromDto(body))
+        }catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
     override suspend fun saveEvent(event: Event) {
@@ -80,14 +108,50 @@ class EventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveEventWithAttachment(event: Event, upload: MediaUpload) {
-        TODO("Not yet implemented")
+        try {
+            val media = upload(upload)
+            // TODO: add support for other types
+            val eventWithAttachment = event.copy(attachment = Attachment(media.url,
+                "MyPhoto", AttachmentType.IMAGE)
+            )
+            saveEvent(eventWithAttachment)
+        } catch (e: AppError) {
+            throw e
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 
     override suspend fun removeById(id: Long) {
-        TODO("Not yet implemented")
+        try{
+            val response = eventApiService.removeById(id)
+            if(!response.isSuccessful){
+                throw  ApiError(response.code(), response.message())
+            }
+            eventDao.removeById(id)
+        } catch (t: Throwable){
+            println("Event repository error is $t")
+        }
+
     }
 
     override suspend fun upload(upload: MediaUpload): Media {
-        TODO("Not yet implemented")
+        try {
+            val media = MultipartBody.Part.createFormData(
+                "file", upload.file.name, upload.file.asRequestBody())
+
+            val response = mediaApiService.upload(media)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+
+            return response.body() ?: throw ApiError(response.code(), response.message())
+        } catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 }

@@ -11,17 +11,6 @@ import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
 
 
-interface UserWallCallback {
-    fun onLiked(post: Post){}
-    fun onShared(post: Post){}
-    fun onRemove(post: Post){}
-    fun onEdit(post: Post){}
-    fun onPlay(post: Post){}
-    fun onSingleView(post: Post){}
-    fun onSingleViewImageOnly(post: Post){}
-    fun onSavingRetry(post: Post){}
-    fun onUserProfile(author: String, authorId: Long){}
-}
 class UserWallAdapter(
     private val callback: Callback
 ): PagingDataAdapter<Post, RecyclerView.ViewHolder>(diffCallback) {

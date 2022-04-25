@@ -3,7 +3,6 @@ package ru.netology.nework.entity
 
 import androidx.room.*
 import androidx.room.Entity
-import ru.netology.nmedia.dto.Event
 import ru.netology.nmedia.dto.UserJob
 
 @Entity
@@ -42,6 +41,10 @@ data class JobEntity(
         }
     }
 }
-fun List<JobEntity>.toDto(myId: Long): List<UserJob> = map { it.toDto() }
+
+fun List<JobEntity>.toDto(): List<UserJob> = map { it.toDto() }
 
 fun List<UserJob>.fromDto(): List<JobEntity> = map(JobEntity::fromDto)
+fun UserJob.fromDto(): JobEntity {
+    return JobEntity.fromDto(this)
+}

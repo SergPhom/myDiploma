@@ -7,6 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    //avatar
     <ImageView
         android:id="@+id/avatar"
         android:layout_width="@dimen/avatar_size"
@@ -16,6 +17,7 @@
         tools:ignore="ContentDescription"
         tools:srcCompat="@sample/posts_avatars" />
 
+    //name
     <TextView
         android:id="@+id/author"
         android:layout_width="0dp"
@@ -32,6 +34,7 @@
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="@sample/posts.json/data/author" />
 
+    //list
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresh"
         android:layout_width="wrap_content"
@@ -60,6 +63,8 @@
         app:layout_constraintStart_toStartOf="parent">
 
     </CalendarView>
+
+    //addGroup
     <LinearLayout
         android:id="@+id/jobEditCard"
         android:layout_width="wrap_content"
@@ -70,7 +75,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:orientation="vertical"
         android:background="@color/purple_500"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <EditText
             android:id="@+id/companyName"
@@ -96,8 +101,9 @@
             android:layout_margin="@dimen/little_offset"
             />
 
-        <EditText
+        <TextView
             android:id="@+id/startDate"
+            android:textSize="18sp"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="@color/divider_color"
@@ -107,8 +113,9 @@
             android:textColor="#000000"
             android:layout_margin="@dimen/little_offset"/>
 
-        <EditText
+        <TextView
             android:id="@+id/finishDate"
+            android:textSize="18sp"
             android:layout_width="300dp"
             android:layout_height="30dp"
             android:background="@color/divider_color"

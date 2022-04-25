@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -107,7 +108,6 @@
                 android:layout_height="wrap_content"
                 android:text="Запланировано на:" />
         </LinearLayout>
-        //COORDINATES TODO
 
     </LinearLayout>
 
@@ -120,7 +120,6 @@
         app:layout_constraintTop_toBottomOf="@id/datetime_zone"
         android:text="Speakers:"
         app:layout_constraintStart_toStartOf="parent"/>
-
     <LinearLayout
         android:id="@+id/speakers"
         android:layout_width="match_parent"
@@ -263,6 +262,7 @@
             android:text="20"
             app:icon="@drawable/ic_participants_24"
             tools:srcCompat="@drawable/ic_participants_24" />
+
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/participant_1"
             android:layout_gravity="center_vertical"
@@ -298,14 +298,15 @@
             app:shapeAppearanceOverlay="@style/LittleRoundImageView"
             tools:ignore="ContentDescription"
             tools:srcCompat="@sample/posts_avatars" />
-<!--
+
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/viewes"
+            android:id="@+id/place"
+            android:clickable="true"
+            android:layout_marginStart="@dimen/offset"
             style="@style/Widget.App.Button.OutlinedButton.LikeShare"
-            android:text="@sample/posts.json/data/viewed"
-            app:icon="@drawable/ic_viewed_24"
+            app:icon="@drawable/ic_place_24"
             app:iconTint="?attr/colorControlNormal" />
-            -->
+
     </LinearLayout>
 
     <com.google.android.material.button.MaterialButton

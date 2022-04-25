@@ -20,25 +20,6 @@ interface PostDao {
     @Query("SELECT * FROM PostEntity WHERE id >= :id limit :size")
     fun getByIdAndSize(id: Long, size: Int): Flow<List<PostEntity>>
 
-
-////////////////////////////////////////////////////////////////////////////        CRUD
-//@Query("""
-//        UPDATE PostEntity SET
-//        likeOwnerIds = likes + CASE WHEN likedByMe THEN -1 ELSE 1 END,
-//        likedByMe = CASE WHEN likedByMe THEN 0 ELSE 1 END
-//        WHERE id = :id
-//        """)
-//suspend fun onLikeButtonClick(id: Long)
-
-//    @Query(
-//        """
-//           UPDATE PostEntity
-//           SET  shares = shares + CASE WHEN 0 THEN 1 ELSE 1 END
-//           WHERE id = :id
-//        """
-//    )
-//    suspend fun onShareButtonClick(id: Long)
-
     @Query("DELETE FROM PostEntity WHERE id = :id")
     suspend fun onRemoveClick(id: Long)
 

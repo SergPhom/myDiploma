@@ -11,7 +11,6 @@ import ru.netology.nmedia.api.JobApiService
 import ru.netology.nmedia.dao.JobDao
 import ru.netology.nmedia.dao.JobRemoteKeyDao
 import ru.netology.nmedia.db.AppDb
-import ru.netology.nmedia.dto.Event
 import ru.netology.nmedia.dto.UserJob
 import ru.netology.nmedia.entity.JobRemoteKeyEntity
 import ru.netology.nmedia.error.ApiError
@@ -23,15 +22,17 @@ class JobRemoteMediator @Inject constructor(
     private val apiService: JobApiService,
     private val dao: JobDao,
     private val jobRemoteKeyDao: JobRemoteKeyDao,
-    private val db: AppDb
+    private val db: AppDb,
+    private val userId: Long
 ): RemoteMediator<Int, JobEntity>() {
 
     override suspend fun initialize(): InitializeAction =
         if(dao.isEmpty()){
-            println("db is empty")
             InitializeAction.LAUNCH_INITIAL_REFRESH
         } else {
-            InitializeAction.SKIP_INITIAL_REFRESH
+            dao.removeAll()
+            jobRemoteKeyDao.removeAll()
+            InitializeAction.LAUNCH_INITIAL_REFRESH
         }
 
     private fun checkResponse(
@@ -50,11 +51,11 @@ class JobRemoteMediator @Inject constructor(
             val response = when (loadType){
                 LoadType.REFRESH -> {
                     if (jobRemoteKeyDao.isEmpty()){
-                        apiService.getMyJobs()
+                        apiService.getJobs(userId)
                     }else{
                         val id = jobRemoteKeyDao.max() ?:
                         return MediatorResult.Success(false)
-                        apiService.getMyJobs()
+                        apiService.getJobs(userId)
                     }
                 }
                 LoadType.APPEND -> {
@@ -65,7 +66,6 @@ class JobRemoteMediator @Inject constructor(
                 }
             }
             val jobs = checkResponse(response)
-            println("Jobs is $jobs")
             db.withTransaction {
                 when(loadType){
                     LoadType.REFRESH -> {

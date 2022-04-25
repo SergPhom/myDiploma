@@ -12,9 +12,7 @@ import ru.netology.nmedia.api.WallApiService
 import ru.netology.nmedia.dao.UserWallDao
 import ru.netology.nmedia.dao.UserWallRemoteKeyDao
 import ru.netology.nmedia.db.AppDb
-import ru.netology.nmedia.dto.Event
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.entity.UserWallEntity
 import ru.netology.nmedia.entity.toUserWallEntity
 import ru.netology.nmedia.error.ApiError
@@ -32,14 +30,6 @@ class UserWallRepositoryImpl @Inject constructor(
     val apiService: WallApiService,
     val db: AppDb
 ): UserWallRepository {
-
-//    override  var userId = 0L
-//    @OptIn(ExperimentalPagingApi::class)
-//    val customPager = Pager(
-//        config =  PagingConfig(30),
-//        remoteMediator = UserWallRemoteMediator(apiService,dao,remoteKeyDao,db,userId),
-//        pagingSourceFactory = { dao.getAll()}
-//    )
 
     @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalPagingApi::class)
@@ -69,7 +59,38 @@ class UserWallRepositoryImpl @Inject constructor(
     }
 
     override suspend fun clearData(){
-        dao.removeAll().also { println("dao is cleared ") }
-        keyDao.removeAll().also { println("key dao is cleared ") }
+        dao.removeAll()
+        keyDao.removeAll()
+    }
+
+    override suspend fun dislikePost(post: Post) {
+        try {
+            val response = apiService.dislikePost(post.authorId, post.id)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            dao.insert(UserWallEntity.fromDto(body))
+        }catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
+    }
+
+    override suspend fun likePost(post: Post) {
+        try {
+            val response = apiService.likePost(post.authorId, post.id)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            dao.insert(UserWallEntity.fromDto(body))
+        }catch (e: IOException) {
+            throw NetworkError
+        } catch (e: Exception) {
+            throw UnknownError
+        }
     }
 }

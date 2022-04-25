@@ -43,7 +43,8 @@ class AppAuth @Inject constructor(
         sendPushToken()
     }
 
-    val authStateFlow: StateFlow<AuthState> = _authStateFlow.asStateFlow()
+    val authStateFlow: StateFlow<AuthState>
+    get() = _authStateFlow.asStateFlow()
 
     @Synchronized
     fun setAuth(id: Long, token: String) {
@@ -82,7 +83,6 @@ class AppAuth @Inject constructor(
             try {
                 val pushToken = PushToken(token ?: Firebase.messaging.token.await())
                 usersApiService.save(pushToken)
-                println("AppAuth  $pushToken")
             } catch (e: Exception) {
                 e.printStackTrace()
             }

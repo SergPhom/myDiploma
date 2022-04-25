@@ -11,14 +11,12 @@ data class User(
     val login: String,
     val name: String,
     val avatar: String?,
-    //val authorities: Authorities?,
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readLong()!!,
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
-        //TODO("authorities")
     )
 
     companion object : Parceler<User> {

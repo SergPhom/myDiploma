@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.SavedStateHandle
@@ -17,7 +18,9 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.adapter.Callback
 import ru.netology.nmedia.adapter.UserWallAdapter
 import ru.netology.nmedia.databinding.FragmentUserWallBinding
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.view.loadAvatar
+import ru.netology.nmedia.viewmodel.PostViewModel
 import ru.netology.nmedia.viewmodel.UserWallViewModel
 
 private const val USER_ID = "USER_ID"
@@ -34,8 +37,9 @@ val SavedStateHandle.userName: String
 @AndroidEntryPoint
 class UserWallFragment: Fragment() {
 
-    private val viewModel: UserWallViewModel by viewModels(
-       // ownerProducer = ::requireParentFragment
+    private val viewModel: UserWallViewModel by viewModels()
+    private val postViewModel: PostViewModel by viewModels(
+        ownerProducer = ::requireParentFragment
     )
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,14 +62,20 @@ class UserWallFragment: Fragment() {
             inflater, container, false
         )
 
+        val id = arguments?.getLong(USER_ID)
         val adapter = UserWallAdapter(object: Callback {
-
+            override fun onLiked(post: Post) {
+                viewModel.likePost(post)
+            }
         })
 
         binding.avatar.loadAvatar(viewModel.avatar())
         binding.author.setText(viewModel.userName())
         binding.userJobs.setOnClickListener {
-            findNavController().navigate(R.id.action_userWallFragment_to_userProfileFragment)
+            findNavController()
+                .navigate(R.id.action_userWallFragment_to_userProfileFragment,
+                    bundleOf("USER_ID" to id)
+                )
         }
         binding.refresh.setOnRefreshListener {
             adapter.refresh()

@@ -26,12 +26,10 @@ interface PostRepository {
 
     suspend fun dislikeById(id: Long)
 
-//    suspend fun newerPostsViewed()
 //            ***************               DELETE
 
     suspend fun removeById(id: Long)
 
     suspend fun upload(upload: MediaUpload): Media
 
-//    suspend fun fillInDb()
 }

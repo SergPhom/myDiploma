@@ -1,7 +1,6 @@
 package ru.netology.nmedia.repository
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import ru.netology.nework.entity.toEntity
 import ru.netology.nmedia.api.UsersApiService
 import ru.netology.nmedia.dao.UserDao
@@ -18,7 +17,6 @@ class UserRepositoryImpl @Inject constructor(
 ): UserRepository {
 
     override val data: Flow<User>
-    //= UsersApiService.getAll().flow
         get() = TODO("Not yet implemented")
 
     override suspend fun getUsers(){

@@ -78,6 +78,6 @@ data class EventEntity(
     }
 }
 @RequiresApi(Build.VERSION_CODES.O)
-fun List<EventEntity>.toDto(myId: Long): List<Event> = map { it.toDto() }
+fun List<EventEntity>.toDto(): List<Event> = map { it.toDto() }
 
 fun List<Event>.fromDto(): List<EventEntity> = map(EventEntity::fromDto)

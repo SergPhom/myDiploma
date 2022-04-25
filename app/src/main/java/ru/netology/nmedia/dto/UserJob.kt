@@ -12,4 +12,5 @@ data class UserJob(
     val start: Long,
     val finish: Long?,
     val link: String?,
+    val isMyJob: Boolean = false
 ) : Parcelable

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -64,10 +65,22 @@ class MapsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // onBackPressed
+        val callback = object : OnBackPressedCallback(true){
 
-
+            override fun handleOnBackPressed() {
+                try{
+                    viewModel.coords.value = LatLng(55.751999, 37.617734)
+                    findNavController().navigateUp()
+                }catch (e: Throwable){
+                    println("NewPostFragment error is $e")
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(callback)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 
+        //main work space
         lifecycle.coroutineScope.launchWhenCreated {
             googleMap = mapFragment.awaitMap().apply {
                 isTrafficEnabled = true
@@ -79,6 +92,7 @@ class MapsFragment: Fragment() {
                 }
             }
 
+            //permissions check
             when {
                 ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -95,7 +109,6 @@ class MapsFragment: Fragment() {
                     fusedLocationProviderClient.lastLocation.addOnSuccessListener {
                     }
                 }
-                // 2. Должны показать обоснование необходимости прав
                 shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
                     // TODO: show rationale dialog
                 }

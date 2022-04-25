@@ -2,6 +2,7 @@ package ru.netology.nmedia.adapter
 
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.annotation.SuppressLint
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +10,7 @@ import android.view.ViewGroup
 import android.view.animation.BounceInterpolator
 import android.widget.PopupMenu
 import androidx.annotation.RequiresApi
-import androidx.core.animation.doOnEnd
+import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -54,17 +55,7 @@ class PostsAdapter(
         }
     }
 
-    override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
-        val anim = holder.itemView.getTag(R.id.likes + holder.absoluteAdapterPosition)
-        //ещё шанс посмотреть остановленную анимацию при возврате на экран
-        if(anim != null ){
-            (anim as ObjectAnimator).start()
-            //удаляем анимацию при её остановки
-            anim.doOnEnd {
-                holder.itemView.setTag(R.id.likes + holder.absoluteAdapterPosition, null)
-            }
-        }
-    }
+
 
     override fun getItemViewType(position: Int): Int =
         when(getItem(position)){
@@ -76,9 +67,7 @@ class PostsAdapter(
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)){
-            is Ad -> (holder as AdViewHolder)?.bind(item)
             is Post -> (holder as PostViewHolder)?.bind(item)
-            is DateHeader ->(holder as DateViewHolder)?.bind(item)
             null -> error("unknown item type")
         }
     }
@@ -101,21 +90,10 @@ class PostsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when(viewType){
-            R.layout.card_ad -> {
-                val binding = CardAdBinding.inflate(
-                    LayoutInflater.from(parent.context), parent, false
-                )
-                return AdViewHolder(binding, callback)
-            }
             R.layout.card_post -> {
                 val binding = CardPostBinding.inflate(
                     LayoutInflater.from(parent.context), parent, false)
                 return PostViewHolder(binding, callback)
-            }
-            R.layout.card_day -> {
-                val binding = CardDayBinding.inflate(
-                    LayoutInflater.from(parent.context), parent, false)
-                return DateViewHolder(binding, callback)
             }
             else -> error("unknown view type: $viewType")
         }
@@ -137,6 +115,8 @@ class PostsAdapter(
             override fun getChangePayload(oldItem: FeedItem, newItem: FeedItem): Any {
                 return if(newItem is Post && oldItem is Post){
                     Payload(
+                        ownedByMe = newItem.ownedByMe.takeIf { it != oldItem.ownedByMe },
+                        likeOwnerIds = newItem.likeOwnerIds.takeIf { it != oldItem.likeOwnerIds },
                         likedByMe = newItem.likedByMe.takeIf { it!= oldItem.likedByMe },
                         content = newItem.content.takeIf { it != oldItem.content }
                     )
@@ -147,45 +127,30 @@ class PostsAdapter(
 }
 
 data class Payload(
+    val ownedByMe: Boolean? = null,
+    val likeOwnerIds: List<Long>? = null,
     val likedByMe: Boolean? = null,
     val content: String? = null,
 )
-
-class DateViewHolder(
-    private val binding: CardDayBinding,
-    private val callback: Callback
-) : RecyclerView.ViewHolder(binding.root){
-
-    fun bind(date: DateHeader){
-        binding.apply {
-            day.text = date.date
-        }
-    }
-}
-
-class AdViewHolder(
-    private val binding: CardAdBinding,
-    private val callback: Callback
-) : RecyclerView.ViewHolder(binding.root){
-
-    fun bind(ad: Ad){
-        binding.apply {
-            image.load(url = "${BuildConfig.BASE_URL}/media/${ad.image}")
-        }
-    }
-}
 
 class PostViewHolder(
     private val binding: CardPostBinding,
     private val callback: Callback
 ) : RecyclerView.ViewHolder(binding.root) {
+    @SuppressLint("ResourceAsColor")
     fun bind(payload: Payload){
         binding.apply {
+            payload.ownedByMe?.let { state ->
+                menu.isVisible = state
+                likes.isChecked = state
+            }
+            payload.likeOwnerIds?.let { list ->
+                likes.text = "${list.size}"
+            }
             payload.likedByMe?.let { likeByMe ->
                 likes.setIconResource(
                     if(likeByMe) R.drawable.ic_liked_24 else R.drawable.ic_likes_24
                 )
-
                 if (likeByMe) {
                     ObjectAnimator.ofPropertyValuesHolder(
                         likes,
@@ -200,8 +165,7 @@ class PostViewHolder(
                         360F
                     )
                 }.apply {
-                    duration = 1000
-                    repeatCount = 15
+                    duration = 300
                     interpolator = BounceInterpolator()
                     //если анимация есть, заканчиваем ее
                     root.getTag(R.id.likes + absoluteAdapterPosition)?.let {
@@ -230,13 +194,10 @@ class PostViewHolder(
             published.text = formatter.format(Instant.parse(post.published))
             content.text = post.content
             likes.text = "${post.likeOwnerIds.size}"
+            likes.isChecked = post.likedByMe
             likes.setIconResource(
                 if (post.likedByMe) R.drawable.ic_liked_24 else R.drawable.ic_likes_24
             )
-            likes.isChecked = post.likedByMe
-            likes.setIconTintResource(R.color.like_button_tint)
-
-            //******************************************************************Listeners
             likes.setOnClickListener {
                 callback.onLiked(post)
             }
@@ -263,10 +224,6 @@ class PostViewHolder(
                 }.show()
             }
 
-            retrySaving.setOnClickListener {
-                callback.onSavingRetry(post)
-            }
-
             video.setOnClickListener {
                 callback.onPlay(post)
             }
@@ -281,11 +238,6 @@ class PostViewHolder(
             content.setOnClickListener{ callback.onSingleView(post)}
             published.setOnClickListener{ callback.onSingleView(post)}
             imageAttachment.setOnClickListener { callback.onSingleViewImageOnly(post) }
-              //******************************************************************Options
-//            if (!post.saved){
-//                binding.buttonGroup.visibility = View.GONE
-//                binding.retrySaving.visibility = View.VISIBLE
-//            }
 
             if (post.attachment != null) {
                 when (post.attachment.type){

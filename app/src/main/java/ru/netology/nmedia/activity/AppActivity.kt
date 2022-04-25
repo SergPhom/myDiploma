@@ -1,7 +1,6 @@
 package ru.netology.nmedia.activity
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -74,41 +73,33 @@ class AppActivity: AppCompatActivity() {
             )
         }
 
+        //for options menu
         lifecycleScope
         viewModel.data.observe(this) {
             invalidateOptionsMenu()
         }
 
+        //firebase Access
         firebaseInstallations.id.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 println("some stuff happened: ${task.exception}")
                 return@addOnCompleteListener
             }
-
-            val token = task.result
-//            println("FirebaseInst $token")
         }
-
         firebaseMessaging.token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 println("some stuff happened: ${task.exception}")
                 return@addOnCompleteListener
             }
-
-//            val token = task.result
-//            println("FirebaseMess $token")
         }
-
         checkGoogleApiAvailability()
 
+        //form bottom action bar
         val view = binding.bottomBar
-
         val appBarConfigurations = AppBarConfiguration( setOf(R.id.feedFragment, R.id.eventFragment))
-
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
-
         navController.addOnDestinationChangedListener { _, nd: NavDestination, _->
             if(nd.id == (R.id.authFragment)
                 || nd.id == R.id.signUpFragment
@@ -125,6 +116,7 @@ class AppActivity: AppCompatActivity() {
             } }
         setupActionBarWithNavController(navController, appBarConfigurations)
 
+        //bottom action bar functions
         val listener = NavigationBarView.OnItemSelectedListener {
             when(it.itemId){
                 R.id.feed_Fragment -> {
@@ -142,11 +134,7 @@ class AppActivity: AppCompatActivity() {
                 else -> super.onOptionsItemSelected(it)
             }
         }
-        
-        view.setOnItemSelectedListener(
-            listener
-        )
-
+        view.setOnItemSelectedListener(listener)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -208,12 +196,6 @@ class AppActivity: AppCompatActivity() {
             Toast.makeText(this@AppActivity, R.string.google_play_unavailable, Toast.LENGTH_LONG)
                 .show()
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        getSharedPreferences("settings", Context.MODE_PRIVATE).edit()
-            .putBoolean("FIRST", false).apply()
     }
 
 }
