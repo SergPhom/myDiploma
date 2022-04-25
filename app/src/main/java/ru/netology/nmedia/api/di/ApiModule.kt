@@ -1,14 +1,11 @@
 package ru.netology.nmedia.api.di
 
-import android.content.Context
 import android.content.SharedPreferences
 import com.google.android.gms.common.GoogleApiAvailability
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -16,7 +13,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.TOKEN_KEY
-import ru.netology.nmedia.USER_ID
 import ru.netology.nmedia.api.*
 import javax.inject.Singleton
 
